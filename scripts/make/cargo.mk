@@ -12,9 +12,17 @@ else
   $(error "LOG" must be one of "off", "error", "warn", "info", "debug", "trace")
 endif
 
-features-$(FS) += libax/fs
-features-$(NET) += libax/net
-features-$(GRAPHIC) += libax/display
+ifeq ($(STD),y)
+  features-$(MULTITASK) += multitask
+  features-$(IRQ) += irq
+  features-$(FS) += fs
+  features-$(NET) += net
+  features-y += $(STD_FEATURES)
+else
+  features-$(FS) += libax/fs
+  features-$(NET) += libax/net
+  features-$(GRAPHIC) += libax/display
+endif
 
 ifeq ($(BUS),pci)
   features-y += libax/bus-pci

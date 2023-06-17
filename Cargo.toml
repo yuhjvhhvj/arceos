@@ -62,4 +62,8 @@ members = [
     "modules/axtask",
 
     "ulib/libax",
+
+    "sys",
+
+    "stdapps/helloworld",
 ]

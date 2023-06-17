@@ -4,18 +4,46 @@ SMP ?= 1
 MODE ?= release
 LOG ?= warn
 
-A ?= apps/helloworld
+A ?= stdapps/helloworld
 APP ?= $(A)
 APP_FEATURES ?=
+STD_FEATURES ?=
+STD_ARGS ?=
 DISK_IMG ?= disk.img
 
 FS ?= n
 NET ?= n
+IRQ ?= n
+MULTITASK ?= n
 GRAPHIC ?= n
 BUS ?= mmio
 
 QEMU_LOG ?= n
 NET_DUMP ?= n
+
+STD ?= n
+MAJOR_DST ?=
+
+ifeq ($(findstring stdapps/, $(APP)), stdapps/)
+  STD := y
+  MAJOR_DST := LibArceOS for [STD]
+  ifneq ($(wildcard $(APP)/std_features.txt),)
+    STD_APP_FEATURES := $(shell cat $(APP)/std_features.txt)
+    ifneq ($(findstring multitask, $(STD_APP_FEATURES)),)
+      MULTITASK := y
+    endif
+    ifneq ($(findstring irq, $(STD_APP_FEATURES)),)
+      IRQ := y
+    endif
+    ifneq ($(findstring fs, $(STD_APP_FEATURES)),)
+      FS := y
+    endif
+    ifneq ($(findstring net, $(STD_APP_FEATURES)),)
+      NET := y
+    endif
+    $(info "############# STD FEATURES: $(STD_APP_FEATURES) $(MULTITASK)")
+  endif
+endif
 
 ifeq ($(wildcard $(APP)),)
   $(error Application path "$(APP)" is not valid)
@@ -29,7 +57,12 @@ endif
 
 # Platform
 ifeq ($(ARCH), x86_64)
+  # Don't enable kvm for WSL/WSL2.
+  ifeq ($(findstring -microsoft-, $(shell uname -r)),)
   ACCEL ?= y
+  else
+  ACCEL ?= n
+  endif
   PLATFORM ?= pc-x86
   TARGET := x86_64-unknown-none
   BUS := pci
@@ -50,6 +83,7 @@ export PLATFORM
 export SMP
 export MODE
 export LOG
+export XARGO_RUST_SRC=$(CURDIR)/rust/library
 
 # Binutils
 ifeq ($(APP_LANG), c)
@@ -134,8 +168,11 @@ else
 endif
 
 clean: clean_c
-	rm -rf $(APP)/*.bin $(APP)/*.elf
-	cargo clean
+	rm -rf $(APP)/*.bin $(APP)/*.elf $(APP)/*.a $(APP)/*.a.orig
+	rm -rf stdapps/*/*.bin stdapps/*/*.elf stdapps/*/*.a $(APP)/*.a.orig
+	rm -f libarceos.redefine-syms
+	xargo clean
+	rm -rf $(HOME)/.xargo/lib/rustlib/x86_64-unknown-arceos
 
 clean_c:
 	rm -rf ulib/c_libax/build_*

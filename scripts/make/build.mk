@@ -12,15 +12,23 @@ else
 endif
 
 _cargo_build:
-	@printf "    $(GREEN_C)Building$(END_C) App: $(APP_NAME), Arch: $(ARCH), Platform: $(PLATFORM), Language: $(APP_LANG)\n"
+	@printf "    $(GREEN_C)Building$(END_C) $(MAJOR_DST) App: $(APP_NAME), Arch: $(ARCH), Platform: $(PLATFORM), Language: $(APP_LANG)\n"
 ifeq ($(APP_LANG), rust)
+  ifeq ($(STD), y)
+	$(call cargo_build,--manifest-path sys/Cargo.toml)
+  else
 	$(call cargo_build,--manifest-path $(APP)/Cargo.toml)
 	@cp $(rust_elf) $(OUT_ELF)
+  endif
 else ifeq ($(APP_LANG), c)
 	$(call cargo_build,-p libax)
 endif
 
 $(OUT_BIN): _cargo_build $(OUT_ELF)
 	$(OBJCOPY) $(OUT_ELF) --strip-all -O binary $@
+
+ifeq ($(STD), y)
+  include scripts/make/std.mk
+endif
 
 .PHONY: _cargo_build
