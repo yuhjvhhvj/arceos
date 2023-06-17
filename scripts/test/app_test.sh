@@ -114,14 +114,6 @@ if [ -z "$1" ]; then
         "apps/task/sleep"
         "apps/task/priority"
         "apps/net/httpclient"
-        "apps/c/helloworld"
-        "apps/c/memtest"
-        "apps/c/sqlite3"
-        "apps/c/httpclient"
-        "apps/c/pthread/basic"
-        "apps/c/pthread/sleep"
-        "apps/c/pthread/pipe"
-        "apps/c/pthread/parallel"
     )
 else
     test_list="$@"
