@@ -1,0 +1,4 @@
+[submodule "rust"]
+	path = rust
+	url = git@github.com:arceos-os/rust.git
+	branch = std_support
