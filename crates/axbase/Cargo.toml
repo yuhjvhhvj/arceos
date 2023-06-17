@@ -1,0 +1,18 @@
+[package]
+name = "axbase"
+version = "0.1.0"
+edition = "2021"
+authors = ["Yuekai Jia <equation618@gmail.com>"]
+description = "Base types and error code for ArceOS"
+license = "GPL-3.0-or-later OR Apache-2.0"
+homepage = "https://github.com/rcore-os/arceos"
+repository = "https://github.com/rcore-os/arceos/tree/main/crates/axerrno"
+documentation = "https://rcore-os.github.io/arceos/axerrno/index.html"
+
+[features]
+rustc-dep-of-std = ["core", "alloc", "compiler_builtins/rustc-dep-of-std"]
+
+[dependencies]
+core = { version = "1.0.0", optional = true, package = "rustc-std-workspace-core" }
+alloc = { version = "1.0.0", optional = true, package = "rustc-std-workspace-alloc" }
+compiler_builtins = { version = "0.1", optional = true }
