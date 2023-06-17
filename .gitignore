@@ -6,3 +6,6 @@
 actual.out
 qemu.log
 libarceos.redefine-syms
+*.elf
+*.bin
+*.a
