@@ -66,4 +66,5 @@ members = [
     "sys",
 
     "stdapps/helloworld",
+    "stdapps/memtest",
 ]

@@ -107,6 +107,7 @@ function test_one() {
 if [ -z "$1" ]; then
     test_list=(
         "stdapps/helloworld"
+        "stdapps/memtest"
     )
 else
     test_list="$@"
