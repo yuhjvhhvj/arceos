@@ -44,7 +44,11 @@ d88P     888 888      "Y8888P  "Y8888   "Y88888P"   "Y8888P"
 "#;
 
 extern "C" {
+    #[cfg(not(feature = "std"))]
     fn main();
+
+    #[cfg(feature = "std")]
+    fn runtime_entry(argc: i32, argv: *const *const u8, env: *const *const u8);
 }
 
 struct LogIfImpl;
@@ -184,7 +188,34 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
         core::hint::spin_loop();
     }
 
+    #[cfg(not(feature = "std"))]
     unsafe { main() };
+
+    #[cfg(feature = "std")]
+    {
+        // Notice: we HAVE to keep _tls alive within this block,
+        // or we got a exception #PF.
+        #[cfg(not(feature = "multitask"))]
+        let _tls = match axhal::arch::setup_tls() {
+            Some(tls) => {
+                info!("Monotask setup TLS block ...");
+                axhal::arch::writefs(tls.thread_ptr() as *const _ as usize);
+                tls
+            },
+            None => {
+                panic!("cannot setup tls!");
+            }
+        };
+
+        // Get the application arguments and environment variables.
+        let (argc, argv, environ) = get_application_parameters();
+
+        info!("Start std::runtime_entry ...");
+        unsafe {
+            // And finally start the application.
+            runtime_entry(argc, argv, environ);
+        }
+    }
 
     #[cfg(feature = "multitask")]
     axtask::exit(0);
@@ -193,6 +224,28 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
         debug!("main task exited: exit_code={}", 0);
         axhal::misc::terminate();
     }
+}
+
+#[cfg(feature = "std")]
+fn get_application_parameters()
+    -> (i32, *const *const u8, *const *const u8) {
+
+    extern crate alloc;
+    use alloc::boxed::Box;
+    use alloc::vec::Vec;
+
+    let mut argv = Vec::new();
+    let name = Box::leak(Box::new("{name}\0")).as_ptr();
+    argv.push(name);
+
+    let mut envv = Vec::new();
+    envv.push(core::ptr::null::<u8>());
+
+    let argc = argv.len() as i32;
+    let argv = argv.leak().as_ptr();
+    let envv = envv.leak().as_ptr();
+
+    (argc, argv, envv)
 }
 
 #[cfg(feature = "alloc")]

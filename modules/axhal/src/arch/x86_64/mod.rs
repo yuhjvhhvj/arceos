@@ -9,6 +9,7 @@ use core::arch::asm;
 
 use memory_addr::{PhysAddr, VirtAddr};
 use x86::{controlregs, tlb};
+use x86::msr::*;
 use x86_64::instructions::interrupts;
 
 pub use self::context::{ExtendedState, FxsaveArea, TaskContext, TrapFrame};
@@ -87,4 +88,22 @@ pub fn flush_tlb(vaddr: Option<VirtAddr>) {
     } else {
         unsafe { tlb::flush_all() }
     }
+}
+
+#[inline]
+pub fn writefs(fs: usize) {
+    let fs = fs.try_into().unwrap();
+    unsafe { wrmsr(IA32_FS_BASE, fs) };
+}
+
+#[inline]
+pub fn readfs() -> usize {
+    unsafe { rdmsr(IA32_FS_BASE) }
+    .try_into()
+    .unwrap()
+}
+
+#[cfg(feature = "std")]
+pub fn setup_tls() -> Option<context::TaskTLS> {
+    context::TaskTLS::setup_tls()
 }

@@ -32,9 +32,18 @@ SECTIONS
         *(.data .data.*)
         *(.sdata .sdata.*)
         *(.got .got.*)
-        . = ALIGN(4K);
-        edata = .;
     }
+
+    .tdata : ALIGN(8) {
+        tls_start = .;
+        *(.tdata.*)
+        tls_tbss_start = .;
+        *(.tbss.*)
+        tls_end = .;
+    }
+
+    . = ALIGN(4K);
+    edata = .;
 
     percpu_start = .;
     .percpu 0x0 : AT(percpu_start) ALIGN(4K) {

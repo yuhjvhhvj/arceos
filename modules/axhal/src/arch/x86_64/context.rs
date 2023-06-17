@@ -1,6 +1,11 @@
 use core::{arch::asm, fmt};
 use memory_addr::VirtAddr;
 
+#[cfg(feature = "std")]
+extern crate alloc;
+#[cfg(feature = "std")]
+use alloc::boxed::Box;
+
 /// Saved registers when a trap (interrupt or exception) occurs.
 #[allow(missing_docs)]
 #[repr(C)]
@@ -44,6 +49,7 @@ impl TrapFrame {
 #[repr(C)]
 #[derive(Debug, Default)]
 struct ContextSwitchFrame {
+    fs: u64,    // TLS support
     r15: u64,
     r14: u64,
     r13: u64,
@@ -111,6 +117,13 @@ impl fmt::Debug for ExtendedState {
     }
 }
 
+#[cfg(feature = "std")]
+#[derive(Debug)]
+pub struct TaskTLS {
+    _block: Box<[u8]>,
+    thread_ptr: Box<*mut ()>,
+}
+
 /// Saved hardware states of a task.
 ///
 /// The context usually includes:
@@ -136,6 +149,9 @@ pub struct TaskContext {
     pub kstack_top: VirtAddr,
     /// `RSP` after all callee-saved registers are pushed.
     pub rsp: u64,
+    /// Task Thread-Local-Storage (TLS)
+    #[cfg(feature = "std")]
+    pub tls: Option<TaskTLS>,
     /// Extended states, i.e., FP/SIMD states.
     #[cfg(feature = "fp_simd")]
     pub ext_state: ExtendedState,
@@ -147,8 +163,20 @@ impl TaskContext {
         Self {
             kstack_top: VirtAddr::from(0),
             rsp: 0,
+            #[cfg(feature = "std")]
+            tls: None,
             #[cfg(feature = "fp_simd")]
             ext_state: ExtendedState::default(),
+        }
+    }
+
+    #[cfg(feature = "std")]
+    pub fn init_tls(&mut self) {
+        if self.tls.is_none() {
+            self.tls = TaskTLS::setup_tls();
+            info!("====== init_tls no: 0x{:x}", self.thread_local_storage());
+        } else {
+            info!("====== init_tls has: 0x{:x}", self.thread_local_storage());
         }
     }
 
@@ -161,16 +189,35 @@ impl TaskContext {
             // is executed), (stack pointer + 8) should be 16-byte aligned.
             let frame_ptr = (kstack_top.as_mut_ptr() as *mut u64).sub(1);
             let frame_ptr = (frame_ptr as *mut ContextSwitchFrame).sub(1);
+            #[allow(unused_mut)]
+            let mut ctx_frame = ContextSwitchFrame {
+                rip: entry as _,
+                ..Default::default()
+            };
+            #[cfg(feature = "std")]
+            {
+                self.init_tls();
+                if let Some(tls) = &self.tls {
+                    ctx_frame.fs = tls.thread_ptr() as *const _ as u64;
+                    info!("+++++++++ ctx_frame.fs 0x{:x}", ctx_frame.fs);
+                }
+            }
             core::ptr::write(
                 frame_ptr,
-                ContextSwitchFrame {
-                    rip: entry as _,
-                    ..Default::default()
-                },
+                ctx_frame,
             );
             self.rsp = frame_ptr as u64;
         }
         self.kstack_top = kstack_top;
+    }
+
+    #[cfg(feature = "std")]
+    pub fn thread_local_storage(&self) -> u64 {
+        if let Some(tls) = &self.tls {
+            tls.thread_ptr() as *const _ as u64
+        } else {
+            panic!("no tls block found!");
+        }
     }
 
     /// Switches to another task.
@@ -184,9 +231,70 @@ impl TaskContext {
             next_ctx.ext_state.restore();
         }
         unsafe {
-            // TODO: swtich tls
             context_switch(&mut self.rsp, &next_ctx.rsp)
         }
+    }
+}
+
+#[cfg(feature = "std")]
+impl TaskTLS {
+    pub fn setup_tls() -> Option<TaskTLS> {
+        extern "C" {
+            fn tls_start();
+            fn tls_tbss_start();
+            fn tls_end();
+        }
+
+        let start = tls_start as usize;
+        let tbss_start = tls_tbss_start as usize;
+        let end = tls_end as usize;
+
+        let tls_len = end - start;
+        // Get TLS initialization image
+        let tls_init_image = {
+            let tls_init_data = start as *const u8;
+            let tls_init_len = tbss_start - start;
+
+            // SAFETY: We will have to trust the environment here.
+            unsafe { core::slice::from_raw_parts(tls_init_data, tls_init_len) }
+        };
+        // Allocate TLS block
+        let mut block = {
+            let tls_align = 8;
+
+            // As described in “ELF Handling For Thread-Local Storage”
+            let tls_offset = Self::align_up(tls_len, tls_align);
+
+            // To access TLS blocks on x86-64, TLS offsets are *subtracted* from the thread register value.
+            // So the thread pointer needs to be `block_ptr + tls_offset`.
+            // Allocating only tls_len bytes would be enough to hold the TLS block.
+            // For the thread pointer to be sound though, we need it's value to be included in or one byte past the same allocation.
+            alloc::vec![0; tls_offset].into_boxed_slice()
+        };
+        // Initialize beginning of the TLS block with TLS initialization image
+        block[..tls_init_image.len()].copy_from_slice(tls_init_image);
+
+        // The end of the TLS block was already zeroed by the allocator
+
+        // thread_ptr = block_ptr + tls_offset
+        // block.len() == tls_offset
+        let thread_ptr = block.as_mut_ptr_range().end.cast::<()>();
+
+        // Put thread pointer on heap, so it does not move and can be referenced in fs:0
+        let thread_ptr = Box::new(thread_ptr);
+        let ret = TaskTLS {
+            _block: block,
+            thread_ptr,
+        };
+        Some(ret)
+    }
+
+    pub fn thread_ptr(&self) -> &*mut () {
+        &self.thread_ptr
+    }
+
+    const fn align_up(addr: usize, align: usize) -> usize {
+        (addr + align - 1) & !(align - 1)
     }
 }
 
@@ -200,9 +308,23 @@ unsafe extern "C" fn context_switch(_current_stack: &mut u64, _next_stack: &u64)
         push    r13
         push    r14
         push    r15
+
+        mov ecx, 0xc0000100 // FS.Base Model Specific Register
+        rdmsr
+        sub rsp, 8
+        mov [rsp+4], edx
+        mov [rsp], eax
+
         mov     [rdi], rsp
 
         mov     rsp, [rsi]
+
+        mov ecx, 0xc0000100 // FS.Base Model Specific Register
+        mov edx, [rsp+4]
+        mov eax, [rsp]
+        add rsp, 8
+        wrmsr
+
         pop     r15
         pop     r14
         pop     r13
