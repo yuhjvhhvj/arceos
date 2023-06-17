@@ -1,0 +1,37 @@
+[package]
+name = "sys"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]
+name = "arceos"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+use_ramfs = [
+    "axfs/myfs", "dep:axfs_vfs", "dep:axfs_ramfs", "dep:crate_interface"
+]
+multitask = ["libax/multitask", "dep:axtask"]
+irq = ["libax/irq"]
+fs = ["libax/fs", "dep:axfs"]
+net = ["libax/net", "dep:axnet"]
+default = [
+    "libax/std", "libax/fp_simd",
+    "libax/alloc", "libax/paging",
+]
+
+[dependencies]
+libax = { path = "../ulib/libax" }
+axhal = { path = "../modules/axhal" }
+axruntime = { path = "../modules/axruntime" }
+axalloc = { path = "../modules/axalloc" }
+axbase = { path = "../crates/axbase" }
+axtask = { path = "../modules/axtask", optional = true }
+axnet = { path = "../modules/axnet", optional = true }
+axfs = { path = "../modules/axfs", optional = true }
+axfs_vfs = { path = "../crates/axfs_vfs", optional = true }
+axfs_ramfs = { path = "../crates/axfs_ramfs", optional = true }
+crate_interface = { path = "../crates/crate_interface", optional = true }
+axio = { path = "../crates/axio", optional = true }
