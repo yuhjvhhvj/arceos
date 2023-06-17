@@ -4,7 +4,7 @@ SMP ?= 1
 MODE ?= release
 LOG ?= warn
 
-A ?= stdapps/memtest
+A ?= stdapps/exception
 APP ?= $(A)
 APP_FEATURES ?=
 STD_FEATURES ?=
