@@ -18,6 +18,7 @@ multitask = [
 ]
 irq = []
 preempt = ["irq", "percpu?/preempt", "kernel_guard/preempt"]
+tls = []
 
 sched_fifo = ["multitask"]
 sched_rr = ["multitask", "preempt"]

@@ -22,6 +22,8 @@ fs = ["axdriver", "axfs"]
 net = ["axdriver", "axnet"]
 display = ["axdriver", "axdisplay"]
 
+std = ["axhal/tls", "axtask?/tls"]
+
 [dependencies]
 axhal = { path = "../axhal" }
 axlog = { path = "../axlog" }
