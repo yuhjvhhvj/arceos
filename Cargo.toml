@@ -68,4 +68,5 @@ members = [
     "stdapps/helloworld",
     "stdapps/memtest",
     "stdapps/exception",
+    "stdapps/task/basic",
 ]

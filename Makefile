@@ -4,7 +4,7 @@ SMP ?= 1
 MODE ?= release
 LOG ?= warn
 
-A ?= stdapps/exception
+A ?= stdapps/task/basic
 APP ?= $(A)
 APP_FEATURES ?=
 STD_FEATURES ?=
@@ -173,6 +173,7 @@ endif
 clean: clean_c
 	rm -rf $(APP)/*.bin $(APP)/*.elf $(APP)/*.a $(APP)/*.a.orig
 	rm -rf stdapps/*/*.bin stdapps/*/*.elf stdapps/*/*.a $(APP)/*.a.orig
+	rm -rf stdapps/*/*/*.bin stdapps/*/*/*.elf stdapps/*/*/*.a $(APP)/*/*.a.orig
 	rm -f libarceos.redefine-syms
 	xargo clean
 	rm -rf $(HOME)/.xargo/lib/rustlib/x86_64-unknown-arceos

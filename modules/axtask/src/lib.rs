@@ -43,7 +43,7 @@ cfg_if::cfg_if! {
 }
 
 #[cfg_attr(not(feature = "multitask"), path = "api_s.rs")]
-mod api;
+pub mod api;
 
 #[cfg(test)]
 mod tests;

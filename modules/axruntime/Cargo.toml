@@ -20,7 +20,7 @@ fs = ["alloc", "paging", "axdriver/virtio-blk", "dep:axfs"] # TODO: remove "pagi
 net = ["alloc", "paging", "axdriver/virtio-net", "dep:axnet"]
 display = ["alloc", "paging", "axdriver/virtio-gpu", "dep:axdisplay"]
 
-std = ["axhal/std"]
+std = ["axhal/std", "axtask/std"]
 
 default = ["axtask?/default"]
 

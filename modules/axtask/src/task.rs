@@ -152,6 +152,8 @@ impl TaskInner {
         if t.name == "idle" {
             t.is_idle = true;
         }
+        #[cfg(feature = "std")]
+        t.ctx.get_mut().init_tls();
         Arc::new(AxTask::new(t))
     }
 
@@ -337,6 +339,11 @@ impl CurrentTask {
     pub(crate) unsafe fn init_current(init_task: AxTaskRef) {
         let ptr = Arc::into_raw(init_task);
         axhal::cpu::set_current_task_ptr(ptr);
+        #[cfg(feature = "std")]
+        {
+            let tls_ptr = (*ptr).ctx.get().as_ref().unwrap().thread_local_storage();
+            axhal::arch::writefs(tls_ptr as usize);
+        }
     }
 
     pub(crate) unsafe fn set_current(prev: Self, next: AxTaskRef) {
