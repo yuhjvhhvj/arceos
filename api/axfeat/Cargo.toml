@@ -12,6 +12,9 @@ documentation = "https://rcore-os.github.io/arceos/axfeat/index.html"
 [features]
 default = []
 
+# Build for rust std library
+std = ["axruntime/std"]
+
 # Multicore
 smp = ["axhal/smp", "axruntime/smp", "spinlock/smp"]
 

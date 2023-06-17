@@ -6,6 +6,7 @@
 #![feature(ip_in_core)]
 #![feature(doc_auto_cfg)]
 #![feature(doc_cfg)]
+#![feature(strict_provenance)] // TODO: remove this feature
 #![allow(unused_imports)]
 
 #[cfg(any(
@@ -21,6 +22,8 @@ extern crate axruntime;
 #[macro_use]
 mod macros;
 mod imp;
+
+pub mod legacy;
 
 pub use axerrno::{AxError, AxResult};
 
