@@ -156,6 +156,11 @@ impl File {
     pub fn metadata(&self) -> Result<Metadata> {
         self.inner.get_attr().map(Metadata)
     }
+
+    /// Queries attributes of the underlying file.
+    pub fn get_attr(&self) -> Result<crate::fops::FileAttr> {
+        self.inner.get_attr()
+    }
 }
 
 impl Read for File {

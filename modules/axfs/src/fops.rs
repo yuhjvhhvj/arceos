@@ -109,6 +109,28 @@ impl OpenOptions {
         }
         true
     }
+
+    fn has(flags: u32, bit: u32) -> bool {
+        (flags & bit) == bit
+    }
+
+    const F_READ:   u32 = 0x01;
+    const F_WRITE:  u32 = 0x02;
+    const F_APPEND: u32 = 0x04;
+    const F_TRUNC:  u32 = 0x08;
+    const F_CREATE: u32 = 0x10;
+    const F_NEW:    u32 = 0x20;     /* for create_new */
+
+    pub fn from_flags(flags: u32) -> Self {
+        let mut opts = Self::new();
+        opts.read = Self::has(flags, Self::F_READ);
+        opts.write = Self::has(flags, Self::F_WRITE);
+        opts.append = Self::has(flags, Self::F_APPEND);
+        opts.truncate = Self::has(flags, Self::F_TRUNC);
+        opts.create = Self::has(flags, Self::F_CREATE);
+        opts.create_new = Self::has(flags, Self::F_NEW);
+        opts
+    }
 }
 
 impl File {

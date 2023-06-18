@@ -77,7 +77,7 @@ pub fn sys_mkdir(path: &str) -> Result<(), AxError> {
 
 #[no_mangle]
 pub fn sys_rmdir(path: &str) -> Result<(), AxError> {
-    axfs::api::remove_dir(path, true)
+    axfs::api::remove_dir(path)
 }
 
 #[no_mangle]
