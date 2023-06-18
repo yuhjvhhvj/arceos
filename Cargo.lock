@@ -1500,6 +1500,10 @@ name = "std-helloworld"
 version = "0.1.0"
 
 [[package]]
+name = "std-httpserver"
+version = "0.1.0"
+
+[[package]]
 name = "std-memtest"
 version = "0.1.0"
 
