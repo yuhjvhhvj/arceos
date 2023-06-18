@@ -1524,6 +1524,10 @@ name = "std-thread-basic"
 version = "0.1.0"
 
 [[package]]
+name = "std-udpserver"
+version = "0.1.0"
+
+[[package]]
 name = "std-yield"
 version = "0.1.0"
 

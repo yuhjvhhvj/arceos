@@ -4,7 +4,7 @@ SMP ?= 1
 MODE ?= release
 LOG ?= warn
 
-A ?= stdapps/net/httpserver
+A ?= stdapps/net/udpserver
 APP ?= $(A)
 APP_FEATURES ?=
 STD_FEATURES ?=
