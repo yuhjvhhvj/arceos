@@ -1504,6 +1504,10 @@ name = "std-parallel"
 version = "0.1.0"
 
 [[package]]
+name = "std-sleep"
+version = "0.1.0"
+
+[[package]]
 name = "std-thread-basic"
 version = "0.1.0"
 

@@ -70,4 +70,5 @@ members = [
     "stdapps/exception",
     "stdapps/task/basic",
     "stdapps/task/parallel",
+    "stdapps/task/sleep",
 ]
