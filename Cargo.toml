@@ -72,4 +72,5 @@ members = [
     "stdapps/task/parallel",
     "stdapps/task/sleep",
     "stdapps/task/yield",
+    "stdapps/task/priority",
 ]
