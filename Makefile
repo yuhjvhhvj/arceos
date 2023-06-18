@@ -15,6 +15,7 @@ FS ?= n
 NET ?= n
 IRQ ?= n
 MULTITASK ?= n
+SCHED_POLICY ?= sched_fifo
 GRAPHIC ?= n
 BUS ?= mmio
 
@@ -28,20 +29,40 @@ ifeq ($(findstring stdapps/, $(APP)), stdapps/)
   STD := y
   MAJOR_DST := LibArceOS for [STD]
   ifneq ($(wildcard $(APP)/std_features.txt),)
-    STD_APP_FEATURES := $(shell cat $(APP)/std_features.txt)
-    ifneq ($(findstring multitask, $(STD_APP_FEATURES)),)
+    EMPTY :=
+    COMMA := ,
+    SPACE := $(EMPTY) $(EMPTY)
+
+    # Replace SPACE with COMMA ',' and so do at both ends.
+	# Match '$(COMMA)FOO$(COMMA)' rather than bare 'FOO'
+	# to avoid mismatch sth as 'aFOOb'.
+    DEF_FEATURES := $(shell cat $(APP)/std_features.txt) $(STD_FEATURES)
+    DEF_FEATURES := $(COMMA)$(subst $(SPACE),$(COMMA),$(DEF_FEATURES))$(COMMA)
+    $(warning "######## [$(DEF_FEATURES)]")
+    ifneq ($(findstring $(COMMA)multitask$(COMMA), $(DEF_FEATURES)),)
+      $(warning "--- [multitask]")
       MULTITASK := y
     endif
-    ifneq ($(findstring irq, $(STD_APP_FEATURES)),)
+    ifneq ($(findstring $(COMMA)irq$(COMMA), $(DEF_FEATURES)),)
+      $(warning "--- [irq]")
       IRQ := y
     endif
-    ifneq ($(findstring fs, $(STD_APP_FEATURES)),)
+    ifneq ($(findstring $(COMMA)fs$(COMMA), $(DEF_FEATURES)),)
+      $(warning "--- [fs]")
       FS := y
     endif
-    ifneq ($(findstring net, $(STD_APP_FEATURES)),)
+    ifneq ($(findstring $(COMMA)net$(COMMA), $(DEF_FEATURES)),)
+      $(warning "--- [net]")
       NET := y
     endif
-    $(info "############# STD FEATURES: $(STD_APP_FEATURES) $(MULTITASK)")
+    ifneq ($(findstring $(COMMA)sched_rr$(COMMA), $(DEF_FEATURES)),)
+      $(warning "--- [sched_rr]")
+      SCHED_POLICY := sched_rr
+    endif
+    ifneq ($(findstring $(COMMA)sched_cfs$(COMMA), $(DEF_FEATURES)),)
+      $(warning "--- [sched_cfs]")
+      SCHED_POLICY := sched_cfs
+    endif
   endif
 endif
 

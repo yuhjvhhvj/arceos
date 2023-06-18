@@ -14,6 +14,9 @@ use_ramfs = [
     "axfs/myfs", "dep:axfs_vfs", "dep:axfs_ramfs", "dep:crate_interface"
 ]
 multitask = ["libax/multitask", "dep:axtask"]
+sched_fifo = ["libax/sched_fifo"]
+sched_rr = ["libax/sched_rr"]
+sched_cfs = ["libax/sched_cfs"]
 irq = ["libax/irq"]
 fs = ["libax/fs", "dep:axfs"]
 net = ["libax/net", "dep:axnet"]
@@ -23,12 +26,12 @@ default = [
 ]
 
 [dependencies]
-libax = { path = "../ulib/libax" }
+libax = { path = "../ulib/libax", default-features = false }
 axhal = { path = "../modules/axhal" }
-axruntime = { path = "../modules/axruntime" }
+axruntime = { path = "../modules/axruntime", default-features = false }
 axalloc = { path = "../modules/axalloc" }
 axbase = { path = "../crates/axbase" }
-axtask = { path = "../modules/axtask", optional = true }
+axtask = { path = "../modules/axtask", default-features = false, optional = true }
 axnet = { path = "../modules/axnet", optional = true }
 axfs = { path = "../modules/axfs", optional = true }
 axfs_vfs = { path = "../crates/axfs_vfs", optional = true }

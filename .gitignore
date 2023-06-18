@@ -9,3 +9,6 @@ libarceos.redefine-syms
 *.elf
 *.bin
 *.a
+*.swp
+fat16.img
+fat32.img
