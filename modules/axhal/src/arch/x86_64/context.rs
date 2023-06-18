@@ -174,9 +174,6 @@ impl TaskContext {
     pub fn init_tls(&mut self) {
         if self.tls.is_none() {
             self.tls = TaskTLS::setup_tls();
-            info!("====== init_tls no: 0x{:x}", self.thread_local_storage());
-        } else {
-            info!("====== init_tls has: 0x{:x}", self.thread_local_storage());
         }
     }
 
@@ -199,7 +196,6 @@ impl TaskContext {
                 self.init_tls();
                 if let Some(tls) = &self.tls {
                     ctx_frame.fs = tls.thread_ptr() as *const _ as u64;
-                    info!("+++++++++ ctx_frame.fs 0x{:x}", ctx_frame.fs);
                 }
             }
             core::ptr::write(
