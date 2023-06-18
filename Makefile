@@ -16,6 +16,7 @@ NET ?= n
 IRQ ?= n
 MULTITASK ?= n
 SCHED_POLICY ?= sched_fifo
+FS_TYPE ?= fatfs
 GRAPHIC ?= n
 BUS ?= mmio
 
@@ -38,30 +39,34 @@ ifeq ($(findstring stdapps/, $(APP)), stdapps/)
 	# to avoid mismatch sth as 'aFOOb'.
     DEF_FEATURES := $(shell cat $(APP)/std_features.txt) $(STD_FEATURES)
     DEF_FEATURES := $(COMMA)$(subst $(SPACE),$(COMMA),$(DEF_FEATURES))$(COMMA)
-    $(warning "######## [$(DEF_FEATURES)]")
+    $(info "######## [$(DEF_FEATURES)]")
     ifneq ($(findstring $(COMMA)multitask$(COMMA), $(DEF_FEATURES)),)
-      $(warning "--- [multitask]")
+      $(info "--- [multitask]")
       MULTITASK := y
     endif
     ifneq ($(findstring $(COMMA)irq$(COMMA), $(DEF_FEATURES)),)
-      $(warning "--- [irq]")
+      $(info "--- [irq]")
       IRQ := y
     endif
     ifneq ($(findstring $(COMMA)fs$(COMMA), $(DEF_FEATURES)),)
-      $(warning "--- [fs]")
+      $(info "--- [fs]")
       FS := y
     endif
     ifneq ($(findstring $(COMMA)net$(COMMA), $(DEF_FEATURES)),)
-      $(warning "--- [net]")
+      $(info "--- [net]")
       NET := y
     endif
     ifneq ($(findstring $(COMMA)sched_rr$(COMMA), $(DEF_FEATURES)),)
-      $(warning "--- [sched_rr]")
+      $(info "--- [sched_rr]")
       SCHED_POLICY := sched_rr
     endif
     ifneq ($(findstring $(COMMA)sched_cfs$(COMMA), $(DEF_FEATURES)),)
-      $(warning "--- [sched_cfs]")
+      $(info "--- [sched_cfs]")
       SCHED_POLICY := sched_cfs
+    endif
+    ifneq ($(findstring $(COMMA)use_ramfs$(COMMA), $(DEF_FEATURES)),)
+      $(info "--- [use_ramfs]")
+      FS_TYPE := ramfs
     endif
   endif
 endif

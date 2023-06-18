@@ -19,6 +19,11 @@ ifeq ($(STD),y)
   endif
   features-$(IRQ) += irq
   features-$(FS) += fs
+  ifeq ($(FS),y)
+    ifeq ($(FS_TYPE),ramfs)
+      features-y += use_ramfs
+    endif
+  endif
   features-$(NET) += net
 else
   features-$(FS) += libax/fs
@@ -51,7 +56,7 @@ build_args-release := --release
 build_args-c := --crate-type staticlib
 build_args-rust :=
 
-$(warning "+++++++++ $(features-y)")
+$(info "+++++++++ $(features-y)")
 build_args := \
   --target $(TARGET) \
   --target-dir $(CURDIR)/target \
