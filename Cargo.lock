@@ -1520,6 +1520,10 @@ name = "std-priority"
 version = "0.1.0"
 
 [[package]]
+name = "std-shell"
+version = "0.1.0"
+
+[[package]]
 name = "std-sleep"
 version = "0.1.0"
 
