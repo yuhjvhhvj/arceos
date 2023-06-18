@@ -71,4 +71,5 @@ members = [
     "stdapps/task/basic",
     "stdapps/task/parallel",
     "stdapps/task/sleep",
+    "stdapps/task/yield",
 ]

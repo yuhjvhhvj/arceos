@@ -110,6 +110,8 @@ if [ -z "$1" ]; then
         "stdapps/memtest"
         "stdapps/exception"
         "stdapps/task/parallel"
+        "stdapps/task/sleep"
+        "stdapps/task/yield"
     )
 else
     test_list="$@"
