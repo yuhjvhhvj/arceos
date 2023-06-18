@@ -4,7 +4,7 @@ SMP ?= 1
 MODE ?= release
 LOG ?= warn
 
-A ?= stdapps/task/basic
+A ?= stdapps/task/parallel
 APP ?= $(A)
 APP_FEATURES ?=
 STD_FEATURES ?=

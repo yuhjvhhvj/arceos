@@ -69,4 +69,5 @@ members = [
     "stdapps/memtest",
     "stdapps/exception",
     "stdapps/task/basic",
+    "stdapps/task/parallel",
 ]

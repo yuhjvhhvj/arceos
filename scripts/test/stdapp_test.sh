@@ -109,6 +109,7 @@ if [ -z "$1" ]; then
         "stdapps/helloworld"
         "stdapps/memtest"
         "stdapps/exception"
+        "stdapps/task/parallel"
     )
 else
     test_list="$@"
