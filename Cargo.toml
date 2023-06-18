@@ -76,4 +76,5 @@ members = [
     "stdapps/net/echoserver",
     "stdapps/net/httpserver",
     "stdapps/net/udpserver",
+    "stdapps/net/httpclient",
 ]

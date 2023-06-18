@@ -1,0 +1,2 @@
+test_one "LOG=info" "expect_info.out"
+test_one "LOG=info STD_ARGS=dns" "expect_info_dns.out"

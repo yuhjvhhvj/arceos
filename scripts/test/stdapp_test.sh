@@ -112,6 +112,8 @@ if [ -z "$1" ]; then
         "stdapps/task/parallel"
         "stdapps/task/sleep"
         "stdapps/task/yield"
+        "stdapps/task/priority"
+        "stdapps/net/httpclient"
     )
 else
     test_list="$@"
