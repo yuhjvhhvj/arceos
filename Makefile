@@ -4,7 +4,7 @@ SMP ?= 1
 MODE ?= release
 LOG ?= warn
 
-A ?= stdapps/task/priority
+A ?= stdapps/net/echoserver
 APP ?= $(A)
 APP_FEATURES ?=
 STD_FEATURES ?=

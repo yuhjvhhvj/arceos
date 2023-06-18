@@ -73,4 +73,5 @@ members = [
     "stdapps/task/sleep",
     "stdapps/task/yield",
     "stdapps/task/priority",
+    "stdapps/net/echoserver",
 ]
