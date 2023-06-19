@@ -1,4 +1,4 @@
-use axerrno::{LinuxError, LinuxResult};
+use axbase::{LinuxError, LinuxResult};
 use axhal::time::current_time;
 use core::ffi::c_int;
 

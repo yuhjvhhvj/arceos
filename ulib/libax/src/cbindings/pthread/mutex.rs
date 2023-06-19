@@ -1,6 +1,6 @@
 use crate::cbindings::{ctypes, utils::check_null_mut_ptr};
 use crate::sync::Mutex;
-use axerrno::LinuxResult;
+use axbase::LinuxResult;
 use core::ffi::c_int;
 use core::mem::{size_of, ManuallyDrop};
 

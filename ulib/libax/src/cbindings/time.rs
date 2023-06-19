@@ -1,5 +1,5 @@
 use crate::time::Instant;
-use axerrno::LinuxError;
+use axbase::LinuxError;
 use core::ffi::{c_int, c_long};
 use core::time::Duration;
 

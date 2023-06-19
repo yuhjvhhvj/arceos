@@ -80,6 +80,7 @@ lazy_static = { version = "1.4", features = ["spin_no_std"], optional = true }
 spinlock = { path = "../../crates/spinlock" }
 flatten_objects = { path = "../../crates/flatten_objects" }
 axio = { path = "../../crates/axio" }
+axbase = { path = "../../crates/axbase" }
 axerrno = { path = "../../crates/axerrno" }
 axalloc = { path = "../../modules/axalloc", optional = true }
 axconfig = { path = "../../modules/axconfig" }

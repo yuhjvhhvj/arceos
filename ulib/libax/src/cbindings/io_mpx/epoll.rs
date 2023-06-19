@@ -8,7 +8,7 @@ use crate::cbindings::{
 };
 use crate::debug;
 use crate::sync::Mutex;
-use axerrno::{LinuxError, LinuxResult};
+use axbase::{LinuxError, LinuxResult};
 use axhal::time::current_time;
 
 use alloc::collections::btree_map::Entry;

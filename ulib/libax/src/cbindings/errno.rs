@@ -1,4 +1,4 @@
-use axerrno::LinuxError;
+use axbase::LinuxError;
 use core::ffi::{c_char, c_int};
 
 /// The global errno variable.

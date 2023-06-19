@@ -3,7 +3,7 @@ use core::mem::size_of;
 
 use alloc::sync::Arc;
 use alloc::vec;
-use axerrno::{LinuxError, LinuxResult};
+use axbase::{LinuxError, LinuxResult};
 use axnet::{resolve_socket_addr, IpAddr, Ipv4Addr, SocketAddr, TcpSocket, UdpSocket};
 
 use super::ctypes;

@@ -2,7 +2,7 @@ use alloc::{boxed::Box, collections::BTreeMap, sync::Arc};
 use core::cell::UnsafeCell;
 use core::ffi::{c_int, c_void};
 
-use axerrno::{LinuxError, LinuxResult};
+use axbase::{LinuxError, LinuxResult};
 use axtask::AxTaskRef;
 use spin::RwLock;
 

@@ -1,5 +1,5 @@
 use alloc::sync::Arc;
-use axerrno::{LinuxError, LinuxResult};
+use axbase::{LinuxError, LinuxResult};
 use core::ffi::c_int;
 
 use super::{ctypes, fd_ops::FileLike};

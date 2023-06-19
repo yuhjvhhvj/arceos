@@ -1,7 +1,7 @@
 use super::ctypes;
 use crate::io::{stdin, stdout, PollState};
 use alloc::sync::Arc;
-use axerrno::{LinuxError, LinuxResult};
+use axbase::{LinuxError, LinuxResult};
 
 use core::ffi::{c_int, c_void};
 use flatten_objects::FlattenObjects;

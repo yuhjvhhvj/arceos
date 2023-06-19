@@ -1,11 +1,11 @@
 use core::ffi::{c_char, c_int};
 
 use crate::io::{self, Write};
-use axerrno::LinuxError;
+use axbase::LinuxError;
 use spinlock::SpinNoIrq;
 
 #[cfg(feature = "alloc")]
-use {crate::io::PollState, alloc::sync::Arc, axerrno::LinuxResult};
+use {crate::io::PollState, alloc::sync::Arc, axbase::LinuxResult};
 
 static LOCK: SpinNoIrq<()> = SpinNoIrq::new(()); // Lock used by `ax_println_str` for C apps
 
