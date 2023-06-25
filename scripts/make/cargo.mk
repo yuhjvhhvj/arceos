@@ -74,7 +74,7 @@ define cargo_build
 endef
 
 define cargo_clippy
-  cargo clippy --target $(TARGET) --all-features --workspace --exclude axlog
+  cargo clippy --target $(TARGET) --all-features --workspace --exclude axlog --exclude std-*
   cargo clippy --target $(TARGET) -p axlog -p percpu -p percpu_macros
 endef
 

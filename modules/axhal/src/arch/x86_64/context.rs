@@ -49,6 +49,7 @@ impl TrapFrame {
 #[repr(C)]
 #[derive(Debug, Default)]
 struct ContextSwitchFrame {
+    #[cfg(feature = "std")]
     fs: u64,    // TLS support
     r15: u64,
     r14: u64,
@@ -304,23 +305,9 @@ unsafe extern "C" fn context_switch(_current_stack: &mut u64, _next_stack: &u64)
         push    r13
         push    r14
         push    r15
-
-        mov ecx, 0xc0000100 // FS.Base Model Specific Register
-        rdmsr
-        sub rsp, 8
-        mov [rsp+4], edx
-        mov [rsp], eax
-
         mov     [rdi], rsp
 
         mov     rsp, [rsi]
-
-        mov ecx, 0xc0000100 // FS.Base Model Specific Register
-        mov edx, [rsp+4]
-        mov eax, [rsp]
-        add rsp, 8
-        wrmsr
-
         pop     r15
         pop     r14
         pop     r13
@@ -331,3 +318,19 @@ unsafe extern "C" fn context_switch(_current_stack: &mut u64, _next_stack: &u64)
         options(noreturn),
     )
 }
+/*
+        "
+        mov ecx, 0xc0000100 // FS.Base Model Specific Register
+        rdmsr
+        sub rsp, 8
+        mov [rsp+4], edx
+        mov [rsp], eax
+        "
+        "
+        mov ecx, 0xc0000100 // FS.Base Model Specific Register
+        mov edx, [rsp+4]
+        mov eax, [rsp]
+        add rsp, 8
+        wrmsr
+        "
+        */

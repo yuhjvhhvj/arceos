@@ -47,6 +47,7 @@ pub fn sys_alloc(layout: Layout) -> *mut u8
 }
 
 #[no_mangle]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
 pub fn sys_realloc(ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8
 {
     // SAFETY: the caller must ensure that the `new_size` does not overflow.
@@ -83,14 +84,12 @@ pub fn sys_console_read_bytes(bytes: &mut [u8]) -> usize {
 }
 
 #[no_mangle]
-pub fn sys_clock_gettime(_clock_id: u64, tp: *mut timespec) -> i32 {
+pub fn sys_clock_gettime(_clock_id: u64) -> timespec {
     let now = current_time();
-    let ret = timespec {
+    timespec {
         tv_sec: now.as_secs() as i64,
         tv_nsec: now.subsec_nanos() as i64,
-    };
-    unsafe { *tp = ret; }
-    0
+    }
 }
 
 #[no_mangle]

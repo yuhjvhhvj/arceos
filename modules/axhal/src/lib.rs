@@ -72,7 +72,7 @@ pub mod console {
                 break;
             }
         }
-        return len;
+        len
     }
 }
 

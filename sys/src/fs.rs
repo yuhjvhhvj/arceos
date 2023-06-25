@@ -31,10 +31,8 @@ pub unsafe fn sys_read_dir_next(handle: usize)
     -> Option<Result<StdDirEntry, AxError>>
 {
     let ptr = handle as *mut ReadDir;
-    if let Some(ref de) = ptr.as_mut().unwrap().next() {
-        if let Ok(ref de) = de {
-            return Some(Ok(StdDirEntry::new(de.path(), de.file_name(), de.file_type())));
-        }
+    if let Some(Ok(ref de)) = ptr.as_mut().unwrap().next() {
+        return Some(Ok(StdDirEntry::new(de.path(), de.file_name(), de.file_type())));
     }
     None
 }
