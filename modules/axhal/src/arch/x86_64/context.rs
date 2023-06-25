@@ -295,6 +295,42 @@ impl TaskTLS {
     }
 }
 
+#[cfg(feature = "std")]
+macro_rules! push_fs {
+    () => {
+        r#"
+        mov ecx, 0xc0000100 // FS.Base Model Specific Register
+        rdmsr
+        sub rsp, 8
+        mov [rsp+4], edx
+        mov [rsp], eax
+        "#
+    };
+}
+
+#[cfg(not(feature = "std"))]
+macro_rules! push_fs {
+    () => { "" };
+}
+
+#[cfg(feature = "std")]
+macro_rules! pop_fs {
+    () => {
+        r#"
+        mov ecx, 0xc0000100 // FS.Base Model Specific Register
+        mov edx, [rsp+4]
+        mov eax, [rsp]
+        add rsp, 8
+        wrmsr
+        "#
+    };
+}
+
+#[cfg(not(feature = "std"))]
+macro_rules! pop_fs {
+    () => { "" };
+}
+
 #[naked]
 unsafe extern "C" fn context_switch(_current_stack: &mut u64, _next_stack: &u64) {
     asm!(
@@ -305,9 +341,18 @@ unsafe extern "C" fn context_switch(_current_stack: &mut u64, _next_stack: &u64)
         push    r13
         push    r14
         push    r15
-        mov     [rdi], rsp
+        ",
 
+        push_fs!(),
+
+        "
+        mov     [rdi], rsp
         mov     rsp, [rsi]
+        ",
+
+        pop_fs!(),
+
+        "
         pop     r15
         pop     r14
         pop     r13
@@ -318,19 +363,3 @@ unsafe extern "C" fn context_switch(_current_stack: &mut u64, _next_stack: &u64)
         options(noreturn),
     )
 }
-/*
-        "
-        mov ecx, 0xc0000100 // FS.Base Model Specific Register
-        rdmsr
-        sub rsp, 8
-        mov [rsp+4], edx
-        mov [rsp], eax
-        "
-        "
-        mov ecx, 0xc0000100 // FS.Base Model Specific Register
-        mov edx, [rsp+4]
-        mov eax, [rsp]
-        add rsp, 8
-        wrmsr
-        "
-        */
