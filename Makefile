@@ -39,33 +39,25 @@ ifeq ($(findstring stdapps/, $(APP)), stdapps/)
 	# to avoid mismatch sth as 'aFOOb'.
     DEF_FEATURES := $(shell cat $(APP)/std_features.txt) $(STD_FEATURES)
     DEF_FEATURES := $(COMMA)$(subst $(SPACE),$(COMMA),$(DEF_FEATURES))$(COMMA)
-    $(info "######## [$(DEF_FEATURES)]")
     ifneq ($(findstring $(COMMA)multitask$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [multitask]")
       MULTITASK := y
     endif
     ifneq ($(findstring $(COMMA)irq$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [irq]")
       IRQ := y
     endif
     ifneq ($(findstring $(COMMA)fs$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [fs]")
       FS := y
     endif
     ifneq ($(findstring $(COMMA)net$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [net]")
       NET := y
     endif
     ifneq ($(findstring $(COMMA)sched_rr$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [sched_rr]")
       SCHED_POLICY := sched_rr
     endif
     ifneq ($(findstring $(COMMA)sched_cfs$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [sched_cfs]")
       SCHED_POLICY := sched_cfs
     endif
     ifneq ($(findstring $(COMMA)use_ramfs$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [use_ramfs]")
       FS_TYPE := ramfs
     endif
   endif
@@ -197,15 +189,15 @@ else
 endif
 
 clean: clean_c
-	rm -rf $(APP)/*.bin $(APP)/*.elf $(APP)/*.a $(APP)/*.a.orig
-	rm -rf stdapps/*/*.bin stdapps/*/*.elf stdapps/*/*.a $(APP)/*.a.orig
-	rm -rf stdapps/*/*/*.bin stdapps/*/*/*.elf stdapps/*/*/*.a $(APP)/*/*.a.orig
-	rm -f libarceos.redefine-syms
-	xargo clean
-	rm -rf $(HOME)/.xargo/lib/rustlib/x86_64-unknown-arceos
+	@rm -rf $(APP)/*.bin $(APP)/*.elf $(APP)/*.a $(APP)/*.a.orig
+	@rm -rf stdapps/*/*.bin stdapps/*/*.elf stdapps/*/*.a $(APP)/*.a.orig
+	@rm -rf stdapps/*/*/*.bin stdapps/*/*/*.elf stdapps/*/*/*.a $(APP)/*/*.a.orig
+	@rm -f libarceos.redefine-syms
+	@cargo clean
+	@xargo clean
+	@rm -rf $(HOME)/.xargo/lib/rustlib/x86_64-unknown-arceos
 
 clean_c:
-	rm -rf ulib/c_libax/build_*
-	rm -rf $(app-objs)
+	@rm -rf ulib/c_libax/build_*
 
 .PHONY: all build disasm run justrun debug clippy fmt fmt_c test test_no_fail_fast clean clean_c doc disk_image

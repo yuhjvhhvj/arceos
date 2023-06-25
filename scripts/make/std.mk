@@ -14,7 +14,6 @@ $(OUT_ELF): $(LIB_ARCHIVE)
 	@printf "    $(GREEN_C)Building$(END_C) App: $(APP_NAME), Arch: $(ARCH), Platform: $(PLATFORM), Language: $(APP_LANG)\n"
 	# Remove app's dep file, or elf won't be rebuilt! Same for rust std library!
 	rm -f $(rust_dep) $(rust_dep_std)
-	$(warning "+++++++++++++++++++ $(STD_ARGS)")
 	RUST_TARGET_PATH=`pwd` xargo rustc --manifest-path $(APP)/Cargo.toml \
 		--target x86_64-unknown-arceos \
 		--release \

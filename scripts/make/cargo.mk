@@ -56,7 +56,6 @@ build_args-release := --release
 build_args-c := --crate-type staticlib
 build_args-rust :=
 
-$(info "+++++++++ $(features-y)")
 build_args := \
   --target $(TARGET) \
   --target-dir $(CURDIR)/target \
