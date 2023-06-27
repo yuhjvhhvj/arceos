@@ -100,7 +100,7 @@ dependencies = [
  "axfs",
  "axfs_ramfs",
  "axfs_vfs",
- "crate_interface 0.1.1",
+ "crate_interface",
  "libax",
 ]
 
@@ -122,6 +122,25 @@ dependencies = [
 name = "arceos-yield"
 version = "0.1.0"
 dependencies = [
+ "libax",
+]
+
+[[package]]
+name = "arceos_api"
+version = "0.1.0"
+dependencies = [
+ "axalloc",
+ "axbase",
+ "axfs",
+ "axfs_ramfs",
+ "axfs_vfs",
+ "axhal",
+ "axio",
+ "axlog",
+ "axnet",
+ "axruntime",
+ "axtask",
+ "crate_interface",
  "libax",
 ]
 
@@ -189,7 +208,6 @@ dependencies = [
 name = "axconfig"
 version = "0.1.0"
 dependencies = [
- "cfg-if",
  "serde",
  "toml_edit",
 ]
@@ -244,7 +262,7 @@ dependencies = [
  "axtask",
  "capability",
  "cfg-if",
- "crate_interface 0.1.1",
+ "crate_interface",
  "driver_block",
  "fatfs",
  "lazy_init",
@@ -290,7 +308,7 @@ dependencies = [
  "axlog",
  "bitflags 2.2.1",
  "cfg-if",
- "crate_interface 0.1.1",
+ "crate_interface",
  "handler_table",
  "kernel_guard",
  "lazy_init",
@@ -324,7 +342,7 @@ version = "0.1.0"
 dependencies = [
  "cfg-if",
  "chrono",
- "crate_interface 0.1.1",
+ "crate_interface",
  "log",
  "spinlock",
 ]
@@ -359,7 +377,7 @@ dependencies = [
  "axlog",
  "axnet",
  "axtask",
- "crate_interface 0.1.1",
+ "crate_interface",
  "kernel_guard",
  "lazy_init",
  "percpu",
@@ -383,7 +401,7 @@ dependencies = [
  "axhal",
  "axtask",
  "cfg-if",
- "crate_interface 0.1.1",
+ "crate_interface",
  "kernel_guard",
  "lazy_init",
  "log",
@@ -596,17 +614,6 @@ checksum = "e496a50fda8aacccc86d7529e2c1e0892dbd0f898a6b5645b5561b89c3210efa"
 [[package]]
 name = "crate_interface"
 version = "0.1.1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.16",
-]
-
-[[package]]
-name = "crate_interface"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d54b79db793871881b52a1eb5dc6fd869743122e34795f12db8e183dcb6a4f28"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -932,7 +939,7 @@ name = "kernel_guard"
 version = "0.1.0"
 dependencies = [
  "cfg-if",
- "crate_interface 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "crate_interface",
 ]
 
 [[package]]
@@ -983,9 +990,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.144"
+version = "0.2.146"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b00cc1c228a6782d0f076e7b232802e0c5689d41bb5df366f2a6b6621cfdfe1"
+checksum = "f92be4933c13fd498862a9e02a3055f8a8d9c039ce33db97306fd5a6caa7f29b"
 
 [[package]]
 name = "libloading"
@@ -1566,24 +1573,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
-]
-
-[[package]]
-name = "sys"
-version = "0.1.0"
-dependencies = [
- "axalloc",
- "axbase",
- "axfs",
- "axfs_ramfs",
- "axfs_vfs",
- "axhal",
- "axio",
- "axnet",
- "axruntime",
- "axtask",
- "crate_interface 0.1.1",
- "libax",
 ]
 
 [[package]]

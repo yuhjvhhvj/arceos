@@ -3,8 +3,10 @@ ARCH ?= x86_64
 SMP ?= 1
 MODE ?= release
 LOG ?= warn
+STD ?= n
+V ?=
 
-A ?= stdapps/helloworld
+A ?= apps/helloworld
 APP ?= $(A)
 APP_FEATURES ?=
 STD_FEATURES ?=
@@ -23,12 +25,13 @@ BUS ?= mmio
 QEMU_LOG ?= n
 NET_DUMP ?= n
 
-STD ?= n
-MAJOR_DST ?=
-
 ifeq ($(findstring stdapps/, $(APP)), stdapps/)
   STD := y
-  MAJOR_DST := LibArceOS for [STD]
+endif
+
+# TODO: refactor features passing
+ifeq ($(STD), y)
+  MAJOR_DST := [STD]
   ifneq ($(wildcard $(APP)/std_features.txt),)
     EMPTY :=
     COMMA := ,
@@ -109,7 +112,6 @@ export PLATFORM
 export SMP
 export MODE
 export LOG
-export XARGO_RUST_SRC=$(CURDIR)/rust/library
 
 # Binutils
 ifeq ($(APP_LANG), c)
@@ -196,16 +198,16 @@ else
 	$(call make_disk_image,fat32,$(DISK_IMG))
 endif
 
-clean: clean_c
-	rm -rf $(APP)/*.bin $(APP)/*.elf $(APP)/*.a $(APP)/*.a.orig
-	rm -rf stdapps/*/*.bin stdapps/*/*.elf stdapps/*/*.a $(APP)/*.a.orig
-	rm -rf stdapps/*/*/*.bin stdapps/*/*/*.elf stdapps/*/*/*.a $(APP)/*/*.a.orig
-	rm -f libarceos.redefine-syms
-	xargo clean
-	rm -rf $(HOME)/.xargo/lib/rustlib/x86_64-unknown-arceos
+clean: clean_c clean_std
+	rm -rf $(APP)/*.bin $(APP)/*.elf
+	cargo clean
 
 clean_c:
 	rm -rf ulib/c_libax/build_*
 	rm -rf $(app-objs)
 
-.PHONY: all build disasm run justrun debug clippy fmt fmt_c test test_no_fail_fast clean clean_c doc disk_image
+clean_std:
+	rm -rf third_party/rust/target
+	rm -rf sysroot
+
+.PHONY: all build disasm run justrun debug clippy fmt fmt_c test test_no_fail_fast clean clean_c clean_std doc disk_image

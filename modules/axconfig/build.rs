@@ -2,18 +2,64 @@ use std::io::{Result, Write};
 use std::{convert::AsRef, fs, path::Path};
 use toml_edit::{Decor, Document, Item, Table, Value};
 
+const SUPPORTED_PLATFORMS: &[(&str, &str)] = &[
+    ("pc-x86", "x86_64"),
+    ("qemu-virt-riscv", "riscv"),
+    ("qemu-virt-aarch64", "aarch64"),
+    ("raspi4-aarch64", "aarch64"),
+    ("dummy", ""),
+];
+
 fn main() {
-    // generate config_*.rs for all platforms
-    for fname in fs::read_dir("src/platform").unwrap() {
-        let fname = fname.unwrap().path();
-        if fname.extension().unwrap() == "toml" {
-            let platform = fname.file_stem().unwrap().to_str().unwrap();
-            gen_config_rs(platform).unwrap();
-            println!("cargo:rerun-if-changed={}", fname.display());
-        }
-    }
+    let platform = resolve_platform();
+    let cfg = platform.replace('-', "_");
+    let config_file_path = format!("src/platform/{platform}.toml");
+    gen_config_rs(&platform).unwrap();
+
+    println!("cargo:rustc-cfg={cfg}");
+    println!("cargo:rerun-if-changed={config_file_path}");
     println!("cargo:rerun-if-changed=src/defconfig.toml");
     println!("cargo:rerun-if-env-changed=SMP");
+}
+
+fn resolve_platform() -> String {
+    fn has_feature(feature: &str) -> bool {
+        std::env::var(format!(
+            "CARGO_FEATURE_{}",
+            feature.to_uppercase().replace('-', "_")
+        ))
+        .is_ok()
+    }
+
+    let target_arch = std::env::var("CARGO_CFG_TARGET_ARCH").unwrap();
+    let platform = std::env::var("PLATFORM").unwrap_or("dummy".to_string());
+
+    // If the `PLATFORM` environment variable is set, use it as the target platform.
+    if platform != "dummy" {
+        return platform;
+    }
+
+    let mut candidates = vec![];
+    for (plat, arch) in SUPPORTED_PLATFORMS {
+        if has_feature(&format!("platform-{plat}")) {
+            candidates.push((*plat, *arch));
+        }
+    }
+
+    // If only one platform feature is specified, use it as the target platform.
+    if candidates.len() == 1 {
+        return candidates[0].0.into();
+    }
+
+    // Otherwise, the platform feature should be matched with the target arch.
+    for (plat, arch) in candidates {
+        if target_arch.starts_with(arch) {
+            return plat.into();
+        }
+    }
+
+    // If none of the above conditions is met, use the dummy platform.
+    "dummy".into()
 }
 
 fn add_config(config: &mut Table, key: &str, item: Item, comments: Option<&str>) {

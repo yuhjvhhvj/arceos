@@ -13,18 +13,18 @@ else
 endif
 
 ifeq ($(STD),y)
-  features-$(MULTITASK) += multitask
+  features-$(MULTITASK) += arceos_api/multitask
   ifeq ($(MULTITASK),y)
-    features-y += $(SCHED_POLICY)
+    features-y += libax/$(SCHED_POLICY)
   endif
-  features-$(IRQ) += irq
-  features-$(FS) += fs
+  features-$(IRQ) += libax/irq
+  features-$(FS) += arceos_api/fs
   ifeq ($(FS),y)
     ifeq ($(FS_TYPE),ramfs)
-      features-y += use_ramfs
+      features-y += arceos_api/use_ramfs
     endif
   endif
-  features-$(NET) += net
+  features-$(NET) += arceos_api/net
 else
   features-$(FS) += libax/fs
   features-$(NET) += libax/net
@@ -68,10 +68,14 @@ ifeq ($(default_features),n)
   build_args += --no-default-features
 endif
 
+ifneq ($(V),)
+  build_args += --verbose
+endif
+
 rustc_flags := -Clink-args="-T$(LD_SCRIPT) -no-pie"
 
 define cargo_build
-  cargo rustc $(build_args) $(1) -- $(rustc_flags)
+  $(call run_cmd,cargo rustc,$(build_args) $(1) -- $(rustc_flags))
 endef
 
 define cargo_clippy

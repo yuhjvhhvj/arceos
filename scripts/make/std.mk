@@ -1,43 +1,48 @@
 # Building script for stdapps
 
-LIB_ARCHIVE := $(OUT_DIR)/libarceos.a
-LIB_ARCHIVE_RETAINED := $(LIB_ARCHIVE).retained
-LIB_ARCHIVE_ORIG := $(LIB_ARCHIVE).orig
+host_target := $(shell rustc -vV | grep host | cut -d: -f2 | tr -d " ")
 
-rust_package := $(shell cat $(APP)/Cargo.toml | sed -n 's/name = "\([a-z0-9A-Z_\-]*\)"/\1/p')
-rust_elf := $(CURDIR)/target/x86_64-unknown-arceos/$(MODE)/$(rust_package)
-rust_dep := $(subst -,_,$(rust_package))
-rust_dep := $(CURDIR)/target/x86_64-unknown-arceos/$(MODE)/deps/$(rust_dep)*
-rust_dep_std := $(HOME)/.xargo/lib/rustlib/x86_64-unknown-arceos/.hash
+ifeq ($(ARCH), x86_64)
+  STD_TARGET := x86_64-unknown-arceos
+else
+  $(error "ARCH" must be "x86_64" when "STD" is enabled)
+endif
 
-$(OUT_ELF): $(LIB_ARCHIVE)
-	@printf "    $(GREEN_C)Building$(END_C) App: $(APP_NAME), Arch: $(ARCH), Platform: $(PLATFORM), Language: $(APP_LANG)\n"
-	# Remove app's dep file, or elf won't be rebuilt! Same for rust std library!
-	rm -f $(rust_dep) $(rust_dep_std)
-	$(warning "+++++++++++++++++++ $(STD_ARGS)")
-	RUST_TARGET_PATH=`pwd` xargo rustc --manifest-path $(APP)/Cargo.toml \
-		--target x86_64-unknown-arceos \
-		--release \
-		--features "$(STD_ARGS)" \
-		-- -L $(OUT_DIR) -l static=arceos \
-		-Clink-args="-T$(LD_SCRIPT) -no-pie"
-	@printf "    $(GREEN_C)Copy$(END_C) [$(rust_elf)] [$(OUT_ELF)]\n"
-	cp $(rust_elf) $(OUT_ELF)
+sysroot := $(CURDIR)/sysroot
+rustlib_dir := $(sysroot)/lib/rustlib/$(STD_TARGET)
+rustlib_host_dir := $(sysroot)/lib/rustlib/$(host_target)
+rust_src := $(CURDIR)/third_party/rust
 
-$(LIB_ARCHIVE): $(LIB_ARCHIVE_RETAINED)
-	@mv $(LIB_ARCHIVE_RETAINED) $(LIB_ARCHIVE)
+std_features := compiler-builtins-mem $(features-y)
+rustflags := \
+  --sysroot $(sysroot) \
+  -C embed-bitcode=yes \
+  -Z force-unstable-if-unmarked
+build_std_args := \
+  --target $(STD_TARGET) \
+  --release \
+  --manifest-path $(rust_src)/library/std/Cargo.toml
 
-$(LIB_ARCHIVE_RETAINED): $(LIB_ARCHIVE_ORIG) $(CURDIR)/libarceos.redefine-syms
-	@printf "    $(GREEN_C)Retain$(END_C) $(LIB_ARCHIVE_ORIG)\n"
-	objcopy --redefine-syms=$(CURDIR)/libarceos.redefine-syms $@
+ifneq ($(V),)
+  build_std_args += --verbose
+endif
 
-$(LIB_ARCHIVE_ORIG): $(rust_target_dir)/libarceos.a
-	cp $(CURDIR)/libarceos.redefine-syms.template $(CURDIR)/libarceos.redefine-syms
-	objdump -t $(rust_target_dir)/libarceos.a | grep "sys_" | \
-		awk -F '[ ]+' '{print $$5}' | \
-		xargs -Isymbol echo 'libarceos_symbol symbol' \
-		>> $(CURDIR)/libarceos.redefine-syms
-	@printf "    $(GREEN_C)Copy$(END_C) LibArceOS as $@\n"
-	@cp $(rust_target_dir)/libarceos.a $@
-	objcopy --prefix-symbols=libarceos_ $(LIB_ARCHIVE_ORIG) $(LIB_ARCHIVE_RETAINED)
-	rm $(LIB_ARCHIVE_ORIG)
+ifeq ($(STD_FEATURES),)
+  std_features += libax/default
+endif
+
+export RUSTFLAGS=$(rustflags)
+
+$(rustlib_dir):
+	@printf "    $(GREEN_C)Creating$(END_C) sysroot\n"
+	$(call run_cmd,mkdir,-p $(rustlib_dir) $(rustlib_host_dir))
+	$(call run_cmd,ln,-sf $(rust_src)/target/$(STD_TARGET)/release/deps $(rustlib_dir)/lib)
+	$(call run_cmd,ln,-sf $(rust_src)/target/release/deps $(rustlib_host_dir)/lib)
+	$(call run_cmd,ln,-sf $(CURDIR)/$(STD_TARGET).json $(rustlib_dir)/target.json)
+
+build_std: $(rustlib_dir)
+	@printf "    $(GREEN_C)Building$(END_C) rust-std: Features: $(std_features)\n"
+# stage 1: build the core and alloc libraries first which are required by ArceOS
+	$(call run_cmd,cargo build,$(build_std_args) -p core -p alloc --features "compiler-builtins-mem")
+# stage 2: build ArceOS and the std library with specified features
+	$(call run_cmd,cargo build,$(build_std_args) -p std --features "$(std_features)")

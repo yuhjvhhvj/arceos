@@ -1,14 +1,14 @@
-use std::collections::BTreeMap;
+#![feature(rustc_private)]
 
-extern "Rust" {
-    fn sys_rand_u32() -> u32;
-}
+extern crate arceos_api;
+
+use std::collections::BTreeMap;
 
 fn test_vec() {
     const N: usize = 1_000_000;
     let mut v = Vec::with_capacity(N);
     for _ in 0..N {
-        v.push(unsafe { sys_rand_u32() });
+        v.push(arceos_api::sys_rand_u32());
     }
     v.sort();
     for i in 0..N - 1 {
@@ -21,7 +21,7 @@ fn test_btree_map() {
     const N: usize = 10_000;
     let mut m = BTreeMap::new();
     for _ in 0..N {
-        let value = unsafe { sys_rand_u32() };
+        let value = arceos_api::sys_rand_u32();
         let key = format!("key_{value}");
         m.insert(key, value);
     }

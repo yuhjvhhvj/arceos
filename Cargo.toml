@@ -61,9 +61,9 @@ members = [
     "modules/axsync",
     "modules/axtask",
 
-    "ulib/libax",
+    "api/arceos_api",
 
-    "sys",
+    "ulib/libax",
 
     "stdapps/helloworld",
     "stdapps/memtest",
@@ -79,3 +79,9 @@ members = [
     "stdapps/net/httpclient",
     "stdapps/fs/shell",
 ]
+
+[profile.release]
+lto = true
+
+[patch.crates-io]
+crate_interface = { path = "crates/crate_interface" }
