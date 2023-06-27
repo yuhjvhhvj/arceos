@@ -238,8 +238,7 @@ fn get_application_parameters()
     let name = Box::leak(Box::new("{name}\0")).as_ptr();
     argv.push(name);
 
-    let mut envv = Vec::new();
-    envv.push(core::ptr::null::<u8>());
+    let envv = alloc::vec![core::ptr::null::<u8>()];
 
     let argc = argv.len() as i32;
     let argv = argv.leak().as_ptr();

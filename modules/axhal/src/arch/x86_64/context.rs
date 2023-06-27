@@ -49,6 +49,7 @@ impl TrapFrame {
 #[repr(C)]
 #[derive(Debug, Default)]
 struct ContextSwitchFrame {
+    #[cfg(feature = "std")]
     fs: u64,    // TLS support
     r15: u64,
     r14: u64,
@@ -294,6 +295,32 @@ impl TaskTLS {
     }
 }
 
+#[cfg(not(feature = "std"))]
+#[naked]
+unsafe extern "C" fn context_switch(_current_stack: &mut u64, _next_stack: &u64) {
+    asm!(
+        "
+        push    rbp
+        push    rbx
+        push    r12
+        push    r13
+        push    r14
+        push    r15
+        mov     [rdi], rsp
+
+        mov     rsp, [rsi]
+        pop     r15
+        pop     r14
+        pop     r13
+        pop     r12
+        pop     rbx
+        pop     rbp
+        ret",
+        options(noreturn),
+    )
+}
+
+#[cfg(feature = "std")]
 #[naked]
 unsafe extern "C" fn context_switch(_current_stack: &mut u64, _next_stack: &u64) {
     asm!(

@@ -79,8 +79,8 @@ define cargo_build
 endef
 
 define cargo_clippy
-  cargo clippy --target $(TARGET) --all-features --workspace --exclude axlog
-  cargo clippy --target $(TARGET) -p axlog -p percpu -p percpu_macros
+  cargo clippy --target $(TARGET) --all-features --workspace --exclude axlog --exclude "std-*" $(1)
+  cargo clippy --target $(TARGET) -p axlog -p percpu -p percpu_macros $(1)
 endef
 
 all_packages := \
@@ -90,7 +90,7 @@ all_packages := \
 
 define cargo_doc
   RUSTDOCFLAGS="--enable-index-page -Zunstable-options -D rustdoc::broken_intra_doc_links $(1)" \
-    cargo doc --no-deps --all-features --workspace --exclude "arceos-*"
+    cargo doc --no-deps --all-features --workspace --exclude "arceos-*" --exclude "std-*"
   @# run twice to fix broken hyperlinks
   $(foreach p,$(all_packages), \
     cargo rustdoc --all-features -p $(p)

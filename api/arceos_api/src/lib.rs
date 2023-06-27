@@ -47,7 +47,7 @@ pub fn sys_alloc(layout: Layout) -> *mut u8
 }
 
 #[no_mangle]
-pub fn sys_realloc(ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8
+pub unsafe fn sys_realloc(ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8
 {
     // SAFETY: the caller must ensure that the `new_size` does not overflow.
     // `layout.align()` comes from a `Layout` and is thus guaranteed to be valid.
@@ -83,7 +83,7 @@ pub fn sys_console_read_bytes(bytes: &mut [u8]) -> usize {
 }
 
 #[no_mangle]
-pub fn sys_clock_gettime(_clock_id: u64, tp: *mut timespec) -> i32 {
+pub unsafe fn sys_clock_gettime(_clock_id: u64, tp: *mut timespec) -> i32 {
     let now = current_time();
     let ret = timespec {
         tv_sec: now.as_secs() as i64,
