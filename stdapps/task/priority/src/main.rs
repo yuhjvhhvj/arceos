@@ -49,7 +49,9 @@ fn load(n: &u64) -> u64 {
 }
 
 fn main() {
-    unsafe { sys_set_priority(-20); }
+    unsafe {
+        sys_set_priority(-20);
+    }
     let data = (0..PAYLOAD_KIND)
         .map(|i| Arc::new(vec![TASK_PARAMS[i].value; TASK_PARAMS[i].data_len]))
         .collect::<Vec<_>>();
@@ -67,7 +69,9 @@ fn main() {
         tasks.push(thread::spawn(move || {
             let left = 0;
             let right = data_len;
-            unsafe { sys_set_priority(nice); }
+            unsafe {
+                sys_set_priority(nice);
+            }
             println!(
                 "part {}: {:?} [{}, {})",
                 i,

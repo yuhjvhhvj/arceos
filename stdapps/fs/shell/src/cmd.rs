@@ -1,7 +1,7 @@
 use std::fs::{self, File, FileType};
 use std::io::{self, prelude::*};
-use std::os::arceos::prelude::FileTypeExt;
 use std::os::arceos::fs::PermissionsExt;
+use std::os::arceos::prelude::FileTypeExt;
 
 macro_rules! print_err {
     ($cmd: literal, $msg: literal) => {
@@ -80,9 +80,7 @@ const OTHER_EXEC: u32 = 0o1;
 ///
 /// For example, `0o755` is represented as `rwxr-xr-x`.
 fn rwx_buf(v: u32) -> [u8; 9] {
-    let contains = |bit| -> bool {
-        (v & bit) == bit
-    };
+    let contains = |bit| -> bool { (v & bit) == bit };
 
     let mut perm = [b'-'; 9];
     if contains(OWNER_READ) {

@@ -6,14 +6,14 @@ extern crate alloc;
 
 //pub use axruntime::lang_items::panic;
 
-use core::alloc::Layout;
-use axhal::time::current_time;
 use axbase::timespec;
+use axhal::time::current_time;
+use core::alloc::Layout;
 
 #[cfg(not(feature = "multitask"))]
-use core::time::Duration;
-#[cfg(not(feature = "multitask"))]
 use core::sync::atomic::AtomicU32;
+#[cfg(not(feature = "multitask"))]
+use core::time::Duration;
 
 #[cfg(feature = "multitask")]
 mod task;
@@ -37,8 +37,7 @@ pub fn sys_terminate() -> ! {
 }
 
 #[no_mangle]
-pub fn sys_alloc(layout: Layout) -> *mut u8
-{
+pub fn sys_alloc(layout: Layout) -> *mut u8 {
     if let Ok(ptr) = axalloc::global_allocator().alloc(layout.size(), layout.align()) {
         ptr as *mut u8
     } else {
@@ -47,8 +46,7 @@ pub fn sys_alloc(layout: Layout) -> *mut u8
 }
 
 #[no_mangle]
-pub unsafe fn sys_realloc(ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8
-{
+pub unsafe fn sys_realloc(ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
     // SAFETY: the caller must ensure that the `new_size` does not overflow.
     // `layout.align()` comes from a `Layout` and is thus guaranteed to be valid.
     let new_layout = unsafe { Layout::from_size_align_unchecked(new_size, layout.align()) };
@@ -60,16 +58,14 @@ pub unsafe fn sys_realloc(ptr: *mut u8, layout: Layout, new_size: usize) -> *mut
         unsafe {
             core::ptr::copy_nonoverlapping(ptr, new_ptr, core::cmp::min(layout.size(), new_size));
         }
-        axalloc::global_allocator().dealloc(ptr as usize,
-            layout.size(), layout.align())
+        axalloc::global_allocator().dealloc(ptr as usize, layout.size(), layout.align())
     }
     new_ptr
 }
 
 #[no_mangle]
 pub fn sys_dealloc(ptr: *mut u8, layout: Layout) {
-    axalloc::global_allocator().dealloc(ptr as usize,
-        layout.size(), layout.align())
+    axalloc::global_allocator().dealloc(ptr as usize, layout.size(), layout.align())
 }
 
 #[no_mangle]
@@ -89,7 +85,9 @@ pub unsafe fn sys_clock_gettime(_clock_id: u64, tp: *mut timespec) -> i32 {
         tv_sec: now.as_secs() as i64,
         tv_nsec: now.subsec_nanos() as i64,
     };
-    unsafe { *tp = ret; }
+    unsafe {
+        *tp = ret;
+    }
     0
 }
 
@@ -109,8 +107,7 @@ pub fn sys_futex_wait(_: &AtomicU32, _: u32, _: Option<Duration>) -> bool {
 
 #[cfg(not(feature = "multitask"))]
 #[no_mangle]
-pub fn sys_futex_wake(_: &AtomicU32, _: i32) {
-}
+pub fn sys_futex_wake(_: &AtomicU32, _: i32) {}
 
 #[cfg(not(feature = "fs"))]
 #[no_mangle]

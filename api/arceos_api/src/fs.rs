@@ -1,10 +1,10 @@
-use axfs::fops::{FileAttr, OpenOptions};
-use axfs::fops::File;
-use axfs::api::ReadDir;
-use libax::fs::FileType;
+use alloc::boxed::Box;
 use alloc::string::String;
 use axbase::AxError;
-use alloc::boxed::Box;
+use axfs::api::ReadDir;
+use axfs::fops::File;
+use axfs::fops::{FileAttr, OpenOptions};
+use libax::fs::FileType;
 
 #[allow(dead_code)]
 pub struct StdDirEntry {
@@ -27,12 +27,14 @@ pub fn sys_read_dir(path: &str) -> usize {
 }
 
 #[no_mangle]
-pub unsafe fn sys_read_dir_next(handle: usize)
-    -> Option<Result<StdDirEntry, AxError>>
-{
+pub unsafe fn sys_read_dir_next(handle: usize) -> Option<Result<StdDirEntry, AxError>> {
     let ptr = handle as *mut ReadDir;
     if let Some(Ok(ref de)) = ptr.as_mut().unwrap().next() {
-        return Some(Ok(StdDirEntry::new(de.path(), de.file_name(), de.file_type())));
+        return Some(Ok(StdDirEntry::new(
+            de.path(),
+            de.file_name(),
+            de.file_type(),
+        )));
     }
     None
 }
@@ -55,17 +57,13 @@ pub fn sys_open(path: &str, opts: u32) -> Result<usize, AxError> {
 #[no_mangle]
 pub fn sys_write(handle: usize, buf: &[u8]) -> usize {
     let f = handle as *mut File;
-    unsafe {
-        f.as_mut().unwrap().write(buf).unwrap()
-    }
+    unsafe { f.as_mut().unwrap().write(buf).unwrap() }
 }
 
 #[no_mangle]
 pub fn sys_read(handle: usize, buf: &mut [u8]) -> usize {
     let f = handle as *mut File;
-    unsafe {
-        f.as_mut().unwrap().read(buf).unwrap()
-    }
+    unsafe { f.as_mut().unwrap().read(buf).unwrap() }
 }
 
 #[no_mangle]

@@ -1,14 +1,14 @@
 //
 // Socket stuff
 //
-use core::str::FromStr;
-use core::net::{SocketAddr as StdSocketAddr, IpAddr};
-use alloc::string::ToString;
 use alloc::boxed::Box;
-use axbase::{AF_UNSPEC, SOCK_STREAM, SOCK_DGRAM};
+use alloc::string::ToString;
+use axbase::AxError;
+use axbase::{AF_UNSPEC, SOCK_DGRAM, SOCK_STREAM};
 use axnet::TcpSocket;
 use axnet::UdpSocket;
-use axbase::AxError;
+use core::net::{IpAddr, SocketAddr as StdSocketAddr};
+use core::str::FromStr;
 use libax::net::SocketAddr;
 
 enum StdSocketWrap {
@@ -36,11 +36,11 @@ pub fn sys_socket(family: i32, ty: i32) -> usize {
         SOCK_STREAM => {
             libax::println!("sys_socket: tcp");
             StdSocketWrap::Tcp(TcpSocket::new())
-        },
+        }
         SOCK_DGRAM => {
             libax::println!("sys_socket: udp");
             StdSocketWrap::Udp(UdpSocket::new())
-        },
+        }
         _ => {
             panic!("bad socket type '{}'.", ty);
         }
@@ -59,10 +59,10 @@ pub fn sys_bind(s: usize, addr: &StdSocketAddr) {
         StdSocketWrap::Tcp(sock) => {
             libax::println!("sys_bind: tcp {:?}", addr);
             let _ = sock.bind(addr);
-        },
+        }
         StdSocketWrap::Udp(sock) => {
             let _ = sock.bind(addr);
-        },
+        }
     }
 }
 
@@ -79,10 +79,10 @@ pub fn sys_listen(s: usize, _backlog: i32) -> i32 {
             libax::println!("sys_listen: ");
             let _ = sock.listen();
             0
-        },
+        }
         StdSocketWrap::Udp(_) => {
             panic!("sys_listen: udp");
-        },
+        }
     }
 }
 
@@ -94,11 +94,11 @@ pub fn sys_getsockname(s: usize) -> Result<StdSocketAddr, AxError> {
         StdSocketWrap::Tcp(sock) => {
             let ret = sock.local_addr()?;
             Ok(sockaddr_ax_to_std(&ret))
-        },
+        }
         StdSocketWrap::Udp(sock) => {
             let ret = sock.local_addr()?;
             Ok(sockaddr_ax_to_std(&ret))
-        },
+        }
     }
 }
 
@@ -116,16 +116,15 @@ pub fn sys_accept(s: usize) -> Result<(usize, StdSocketAddr), AxError> {
             libax::println!("sys_accept: {:?}", addr);
             let ptr = Box::leak(Box::new(sock));
             Ok((ptr as *mut _ as usize, addr))
-        },
+        }
         StdSocketWrap::Udp(_) => {
             panic!("sys_accept: udp");
-        },
+        }
     }
 }
 
 #[no_mangle]
-pub fn sys_recv(s: usize, buf: &mut [u8], _flags: i32) -> usize
-{
+pub fn sys_recv(s: usize, buf: &mut [u8], _flags: i32) -> usize {
     libax::println!("sys_recv: ...");
     let f = s as *mut StdSocketWrap;
     let wrap = unsafe { f.as_mut().unwrap() };
@@ -135,10 +134,10 @@ pub fn sys_recv(s: usize, buf: &mut [u8], _flags: i32) -> usize
             let ret = sock.recv(buf).unwrap();
             libax::println!("sys_recv: ret{}", ret);
             ret
-        },
+        }
         StdSocketWrap::Udp(_) => {
             panic!("sys_read: ");
-        },
+        }
     }
 }
 
@@ -153,10 +152,10 @@ pub fn sys_send(s: usize, buf: &[u8]) -> usize {
             let ret = sock.send(buf).unwrap();
             libax::println!("sys_send: ok! ret {}", ret);
             ret
-        },
+        }
         StdSocketWrap::Udp(_) => {
             panic!("sys_send: ");
-        },
+        }
     }
 }
 
@@ -170,26 +169,22 @@ pub fn sys_connect(s: usize, addr: &StdSocketAddr) {
         StdSocketWrap::Tcp(sock) => {
             libax::println!("sys_connect {:?}", addr);
             sock.connect(addr).unwrap()
-        },
+        }
         StdSocketWrap::Udp(_) => {
             panic!("sys_connect: ");
-        },
+        }
     }
 }
 
 #[no_mangle]
-pub fn sys_recvfrom(s: usize, buf: &mut [u8], _flags: i32)
-    -> (usize, StdSocketAddr)
-{
+pub fn sys_recvfrom(s: usize, buf: &mut [u8], _flags: i32) -> (usize, StdSocketAddr) {
     let f = s as *mut StdSocketWrap;
     let wrap = unsafe { f.as_mut().unwrap() };
     let (num, addr) = match wrap {
         StdSocketWrap::Tcp(_) => {
             panic!("sys_recvfrom: ");
-        },
-        StdSocketWrap::Udp(sock) => {
-            sock.recv_from(buf).unwrap()
-        },
+        }
+        StdSocketWrap::Udp(sock) => sock.recv_from(buf).unwrap(),
     };
     let addr = sockaddr_ax_to_std(&addr);
     (num, addr)
@@ -204,17 +199,13 @@ pub fn sys_sendto(s: usize, buf: &[u8], dst: &StdSocketAddr) -> usize {
     match wrap {
         StdSocketWrap::Tcp(_) => {
             panic!("sys_sendto: ");
-        },
-        StdSocketWrap::Udp(sock) => {
-            sock.send_to(buf, dst).unwrap()
-        },
+        }
+        StdSocketWrap::Udp(sock) => sock.send_to(buf, dst).unwrap(),
     }
 }
 
 #[no_mangle]
-pub fn sys_getaddrinfo(name: &str, port: u16)
-    -> Result<alloc::vec::Vec<StdSocketAddr>, AxError>
-{
+pub fn sys_getaddrinfo(name: &str, port: u16) -> Result<alloc::vec::Vec<StdSocketAddr>, AxError> {
     let mut ret: alloc::vec::Vec<StdSocketAddr> = alloc::vec![];
     let ips = axnet::resolve_socket_addr(name).unwrap();
     for ip in &ips {

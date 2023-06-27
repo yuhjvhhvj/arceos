@@ -1,4 +1,4 @@
-use std::io::{Result, Write, Read, stdin, stdout};
+use std::io::{stdin, stdout, Read, Result, Write};
 
 mod cmd;
 
@@ -11,7 +11,10 @@ const SPACE: u8 = b' ';
 const MAX_CMD_LEN: usize = 256;
 
 fn print_prompt() -> Result<()> {
-    print!("arceos:{}$ ", std::env::current_dir().unwrap().to_str().unwrap());
+    print!(
+        "arceos:{}$ ",
+        std::env::current_dir().unwrap().to_str().unwrap()
+    );
     stdout().flush()
 }
 

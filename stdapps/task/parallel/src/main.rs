@@ -2,9 +2,9 @@ extern crate alloc;
 
 use alloc::sync::Arc;
 use alloc::vec::Vec;
-use std::time::Duration;
 use std::sync::Barrier;
 use std::thread;
+use std::time::Duration;
 
 const NUM_DATA: usize = 2_000_000;
 const NUM_TASKS: usize = 16;

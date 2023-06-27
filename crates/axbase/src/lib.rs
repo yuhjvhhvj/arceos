@@ -132,11 +132,11 @@ impl From<AxError> for LinuxError {
 //
 // Socket stuff
 //
-pub const AF_UNSPEC:    i32 = 0;
-pub const AF_INET:      i32 = 2;
+pub const AF_UNSPEC: i32 = 0;
+pub const AF_INET: i32 = 2;
 
-pub const SOCK_STREAM:  i32 = 1;
-pub const SOCK_DGRAM:   i32 = 2;
+pub const SOCK_STREAM: i32 = 1;
+pub const SOCK_DGRAM: i32 = 2;
 
 //
 // Time stuff
@@ -150,10 +150,10 @@ pub const CLOCK_MONOTONIC: u64 = 4;
 #[derive(Copy, Clone, Debug)]
 #[repr(C)]
 pub struct timespec {
-	/// seconds
-	pub tv_sec: i64,
-	/// nanoseconds
-	pub tv_nsec: i64,
+    /// seconds
+    pub tv_sec: i64,
+    /// nanoseconds
+    pub tv_nsec: i64,
 }
 
 pub enum HandleType {

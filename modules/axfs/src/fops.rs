@@ -114,12 +114,12 @@ impl OpenOptions {
         (flags & bit) == bit
     }
 
-    const F_READ:   u32 = 0x01;
-    const F_WRITE:  u32 = 0x02;
+    const F_READ: u32 = 0x01;
+    const F_WRITE: u32 = 0x02;
     const F_APPEND: u32 = 0x04;
-    const F_TRUNC:  u32 = 0x08;
+    const F_TRUNC: u32 = 0x08;
     const F_CREATE: u32 = 0x10;
-    const F_NEW:    u32 = 0x20;     /* for create_new */
+    const F_NEW: u32 = 0x20; /* for create_new */
 
     pub fn from_flags(flags: u32) -> Self {
         let mut opts = Self::new();

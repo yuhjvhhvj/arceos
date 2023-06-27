@@ -8,10 +8,10 @@
 
 extern crate alloc;
 
-use std::str::FromStr;
-use std::net::{IpAddr, TcpListener, TcpStream};
 use std::io::prelude::*;
 use std::io::Result;
+use std::net::{IpAddr, TcpListener, TcpStream};
+use std::str::FromStr;
 use std::thread;
 
 const LOCAL_IP: &str = "10.0.2.15";

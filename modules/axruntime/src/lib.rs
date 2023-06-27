@@ -189,7 +189,9 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
     }
 
     #[cfg(not(feature = "std"))]
-    unsafe { main() };
+    unsafe {
+        main()
+    };
 
     #[cfg(feature = "std")]
     {
@@ -201,7 +203,7 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
                 info!("Monotask setup TLS block ...");
                 axhal::arch::writefs(tls.thread_ptr() as *const _ as usize);
                 tls
-            },
+            }
             None => {
                 panic!("cannot setup tls!");
             }
@@ -227,9 +229,7 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
 }
 
 #[cfg(feature = "std")]
-fn get_application_parameters()
-    -> (i32, *const *const u8, *const *const u8) {
-
+fn get_application_parameters() -> (i32, *const *const u8, *const *const u8) {
     extern crate alloc;
     use alloc::boxed::Box;
     use alloc::vec::Vec;

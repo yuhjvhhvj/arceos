@@ -1,6 +1,6 @@
 use core::str::FromStr;
 
-use std::io::{Result, Read, Write};
+use std::io::{Read, Result, Write};
 use std::net::{IpAddr, TcpListener, TcpStream};
 use std::thread;
 

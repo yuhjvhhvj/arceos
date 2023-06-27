@@ -50,7 +50,7 @@ impl TrapFrame {
 #[derive(Debug, Default)]
 struct ContextSwitchFrame {
     #[cfg(feature = "std")]
-    fs: u64,    // TLS support
+    fs: u64, // TLS support
     r15: u64,
     r14: u64,
     r13: u64,
@@ -199,10 +199,7 @@ impl TaskContext {
                     ctx_frame.fs = tls.thread_ptr() as *const _ as u64;
                 }
             }
-            core::ptr::write(
-                frame_ptr,
-                ctx_frame,
-            );
+            core::ptr::write(frame_ptr, ctx_frame);
             self.rsp = frame_ptr as u64;
         }
         self.kstack_top = kstack_top;
@@ -227,9 +224,7 @@ impl TaskContext {
             self.ext_state.save();
             next_ctx.ext_state.restore();
         }
-        unsafe {
-            context_switch(&mut self.rsp, &next_ctx.rsp)
-        }
+        unsafe { context_switch(&mut self.rsp, &next_ctx.rsp) }
     }
 }
 
