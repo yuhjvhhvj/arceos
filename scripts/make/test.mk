@@ -9,7 +9,3 @@ endef
 define app_test
   $(CURDIR)/scripts/test/app_test.sh
 endef
-
-define stdapp_test
-  $(CURDIR)/scripts/test/stdapp_test.sh
-endef

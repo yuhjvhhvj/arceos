@@ -182,9 +182,6 @@ fmt_c:
 test:
 	$(call app_test)
 
-stdtest:
-	$(call stdapp_test)
-
 unittest:
 	$(call unit_test)
 

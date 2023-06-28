@@ -35,7 +35,7 @@ fn resolve_platform() -> String {
     let platform = std::env::var("PLATFORM").unwrap_or("dummy".to_string());
 
     // If the `PLATFORM` environment variable is set, use it as the target platform.
-    if platform != "dummy" {
+    if platform != "dummy" && SUPPORTED_PLATFORMS.iter().any(|(p, _)| *p == platform) {
         return platform;
     }
 
