@@ -34,7 +34,7 @@ static int __write_buffer(FILE *f)
         return 0;
     if (f->fd == stdout->fd || f->fd == stderr->fd) {
         r = ax_print_str(f->buf, f->buffer_len);
-#ifdef AX_CONFIG_ALLOC
+#ifdef AX_CONFIG_FD
     } else {
         r = write(f->fd, f->buf, f->buffer_len);
 #endif
@@ -158,7 +158,7 @@ int vfprintf(FILE *restrict f, const char *restrict fmt, va_list ap)
     return vfctprintf(__out_wrapper, f, fmt, ap);
 }
 
-#if defined(AX_CONFIG_ALLOC) && defined(AX_CONFIG_FS)
+#ifdef AX_CONFIG_FS
 
 int __fmodeflags(const char *mode)
 {
@@ -228,4 +228,4 @@ char *fgets(char *restrict s, int n, FILE *restrict f)
     return s;
 }
 
-#endif
+#endif // AX_CONFIG_FS

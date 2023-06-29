@@ -153,10 +153,9 @@ make A=apps/net/httpserver ARCH=aarch64 LOG=info NET=y SMP=4 run
 
     ```bash
     # in features.txt
-    default
-    alloc
-    paging
-    net
+    ax/alloc        # enable `alloc` feature for ArceOS modules
+    ax/paging       # enable `paing` feature for ArceOS modules
+    lib/net         # enable `net` feature for the libc
     ```
 
 3. Build your application with ArceOS, by running the `make` command in the application directory:

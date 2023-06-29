@@ -40,10 +40,8 @@ extern FILE *const stderr;
 
 #define FILENAME_MAX 4096
 
-#if defined(AX_CONFIG_ALLOC) && defined(AX_CONFIG_FS)
 FILE *fopen(const char *filename, const char *mode);
 char *fgets(char *__restrict, int, FILE *__restrict);
-#endif
 
 int fflush(FILE *);
 

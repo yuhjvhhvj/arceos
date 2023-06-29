@@ -1,36 +1,63 @@
-# Arguments
+# Available arguments:
+# * General options:
+#     - `ARCH`: Target architecture: x86_64, riscv64, aarch64
+#     - `PLATFORM`: Target platform: pc-x86, qemu-virt-riscv, qemu-virt-aarch64, raspi4-aarch64
+#     - `SMP`: Number of CPUs
+#     - `MODE`: Build mode: release, debug
+#     - `LOG:` Logging level: warnm, error, info, debug, trace
+#     - `V`: Verbose level: (empty), 1, 2
+# * App options:
+#     - `A` or `APP`: Path to the application
+#     - `FEATURES`: Features to be enabled. Each feature need to start with one
+#       of the prefix `ax/`, `lib/` or `app/`. See "scripts/make/features.mk"
+#       for more details.
+# * QEMU options:
+#     - `BLK`: Enable storage devices (virtio-blk)
+#     - `NET`: Enable network devices (virtio-net)
+#     - `GRAPHIC`: Enable display devices and graphic output (virtio-gpu)
+#     - `BUS`: Device bus type: mmio, pci
+#     - `DISK_IMG`: Path to the virtual disk image
+#     - `ACCEL`: Enable hardware acceleration (KVM on linux)
+#     - `QEMU_LOG`: Enable QEMU logging (log file is "qemu.log")
+#     - `NET_DUMP`: Enable network packet dump (log file is "netdump.pcap")
+
+# General options
 ARCH ?= x86_64
 SMP ?= 1
 MODE ?= release
 LOG ?= warn
 V ?=
 
+# App options
 A ?= apps/helloworld
 APP ?= $(A)
-APP_FEATURES ?=
-DISK_IMG ?= disk.img
+FEATURES ?=
 
-FS ?= n
+# QEMU options
+BLK ?= n
 NET ?= n
 GRAPHIC ?= n
 BUS ?= mmio
 
+DISK_IMG ?= disk.img
 QEMU_LOG ?= n
 NET_DUMP ?= n
 
+# App type
 ifeq ($(wildcard $(APP)),)
   $(error Application path "$(APP)" is not valid)
 endif
 
 ifneq ($(wildcard $(APP)/Cargo.toml),)
-  APP_TYPE ?= rust
+  APP_TYPE := rust
 else
-  APP_TYPE ?= c
+  APP_TYPE := c
 endif
 
-# Platform
+# Platform and target
 ifeq ($(ARCH), x86_64)
-  ACCEL ?= y
+  # Don't enable kvm for WSL/WSL2.
+  ACCEL ?= $(if $(findstring -microsoft, $(shell uname -r | tr '[:upper:]' '[:lower:]')),n,y)
   PLATFORM ?= pc-x86
   TARGET := x86_64-unknown-none
   BUS := pci
@@ -51,6 +78,7 @@ export PLATFORM
 export SMP
 export MODE
 export LOG
+export TARGET
 
 # Binutils
 CROSS_COMPILE ?= $(ARCH)-linux-musl-
@@ -101,13 +129,17 @@ debug: build
 	  -ex 'disp /16i $$pc'
 
 clippy:
+ifeq ($(origin ARCH), command line)
+	$(call cargo_clippy,--target $(TARGET))
+else
 	$(call cargo_clippy)
+endif
 
 doc:
 	$(call cargo_doc)
 
 doc_check_missing:
-	$(call cargo_doc,-D missing-docs)
+	$(call cargo_doc)
 
 fmt:
 	cargo fmt --all

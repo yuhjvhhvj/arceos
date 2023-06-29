@@ -4,13 +4,10 @@
 #include <stddef.h>
 #include <sys/stat.h>
 
-#ifdef AX_CONFIG_ALLOC
 int close(int fd);
 ssize_t read(int fd, void *buf, size_t count);
 ssize_t write(int fd, const void *buf, size_t count);
-#endif
 
-#ifdef AX_CONFIG_FS
 ssize_t readlink(const char *path, char *buf, size_t bufsiz);
 int unlink(const char *pathname);
 int rmdir(const char *pathname);
@@ -21,7 +18,6 @@ char *getcwd(char *buf, size_t size);
 off_t lseek(int fd, off_t offset, int whence);
 int fsync(int fd);
 int fchown(int fd, uid_t owner, gid_t group);
-#endif
 
 unsigned sleep(unsigned seconds);
 int usleep(unsigned int useconds);
@@ -29,16 +25,12 @@ int usleep(unsigned int useconds);
 uid_t geteuid(void);
 pid_t getpid(void);
 
-#ifdef AX_CONFIG_PIPE
 int pipe(int fd[2]);
 int pipe2(int fd[2], int flag);
-#endif
 
-#ifdef AX_CONFIG_ALLOC
 int dup(int);
 int dup2(int, int);
 int dup3(int, int, int);
-#endif
 
 long int sysconf(int name);
 

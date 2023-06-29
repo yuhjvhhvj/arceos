@@ -1,9 +1,10 @@
+#ifdef AX_CONFIG_NET
+
 #include <libax.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#if defined(AX_CONFIG_NET)
 int socket(int domain, int type, int protocol)
 {
     return ax_socket(domain, type, protocol);
@@ -83,4 +84,5 @@ int getpeername(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict 
 {
     return ax_getpeername(sockfd, addr, addrlen);
 }
-#endif
+
+#endif // AX_CONFIG_NET

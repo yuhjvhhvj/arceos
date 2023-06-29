@@ -1,3 +1,2 @@
-default
-alloc
-paging
+ax/paging
+lib/alloc

@@ -97,8 +97,6 @@ struct flock {
 
 int fcntl(int fd, int cmd, ... /* arg */);
 
-#ifdef AX_CONFIG_FS
 int open(const char *filename, int flags, ...);
-#endif
 
 #endif

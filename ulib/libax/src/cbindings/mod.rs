@@ -11,11 +11,11 @@ mod ctypes;
 #[macro_use]
 mod utils;
 
-#[cfg(feature = "alloc")]
+#[cfg(feature = "fd")]
 mod fd_ops;
 #[cfg(feature = "fs")]
 mod file;
-#[cfg(feature = "alloc")]
+#[cfg(any(feature = "select", feature = "epoll"))]
 mod io_mpx;
 #[cfg(feature = "alloc")]
 mod malloc;
@@ -61,7 +61,7 @@ pub unsafe extern "C" fn ax_exit(exit_code: core::ffi::c_int) -> ! {
 #[cfg(feature = "alloc")]
 pub use self::malloc::{ax_free, ax_malloc};
 
-#[cfg(feature = "alloc")]
+#[cfg(feature = "fd")]
 pub use self::fd_ops::{ax_close, ax_dup, ax_dup3, ax_fcntl, ax_fstat, ax_read, ax_write};
 
 #[cfg(feature = "fs")]
@@ -83,8 +83,11 @@ pub use self::pthread::{ax_getpid, ax_pthread_create, ax_pthread_exit, ax_pthrea
 #[cfg(feature = "pipe")]
 pub use self::pipe::ax_pipe;
 
-#[cfg(feature = "alloc")]
-pub use self::io_mpx::{ax_epoll_create, ax_epoll_ctl, ax_epoll_wait, ax_select};
+#[cfg(feature = "select")]
+pub use self::io_mpx::ax_select;
+
+#[cfg(feature = "epoll")]
+pub use self::io_mpx::{ax_epoll_create, ax_epoll_ctl, ax_epoll_wait};
 
 #[cfg(feature = "fp_simd")]
 pub use self::strtod::{ax_strtod, ax_strtof};

@@ -1,7 +1,9 @@
+#ifdef AX_CONFIG_FP_SIMD
+
 #include <float.h>
 #include <math.h>
 #include <stdint.h>
-#if defined(AX_CONFIG_FP_SIMD)
+
 #define FORCE_EVAL(x)                             \
     do {                                          \
         if (sizeof(x) == sizeof(float)) {         \
@@ -94,4 +96,4 @@ double floor(double x)
     return x + y;
 }
 
-#endif
+#endif // AX_CONFIG_FP_SIMD

@@ -26,7 +26,7 @@ qemu_args-aarch64 := \
 
 qemu_args-y := -m 128M -smp $(SMP) $(qemu_args-$(ARCH))
 
-qemu_args-$(FS) += \
+qemu_args-$(BLK) += \
   -device virtio-blk-$(vdev-suffix),drive=disk0 \
   -drive id=disk0,if=none,format=raw,file=$(DISK_IMG)
 
@@ -35,7 +35,7 @@ qemu_args-$(NET) += \
   -netdev user,id=net0,hostfwd=tcp::5555-:5555,hostfwd=udp::5555-:5555
 
 ifeq ($(NET_DUMP), y)
-  qemu_args-$(NET) += -object filter-dump,id=dump0,netdev=net0,file=qemu-net0.pcap
+  qemu_args-$(NET) += -object filter-dump,id=dump0,netdev=net0,file=netdump.pcap
 endif
 
 qemu_args-$(GRAPHIC) += \

@@ -1,5 +1,4 @@
-default
-paging
-alloc
-multitask
-pipe
+ax/paging
+lib/alloc
+lib/multitask
+lib/pipe

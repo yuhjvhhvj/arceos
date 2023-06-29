@@ -1,6 +1,6 @@
-default
-alloc
-paging
-net
-fs
-fp_simd
+ax/paging
+lib/fp_simd
+lib/alloc
+lib/fs
+lib/net
+lib/select

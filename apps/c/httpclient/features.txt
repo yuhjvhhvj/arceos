@@ -1,4 +1,3 @@
-default
-alloc
-paging
-net
+ax/paging
+lib/alloc
+lib/net

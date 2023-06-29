@@ -454,6 +454,7 @@ char *strstr(const char *h, const char *n)
 }
 
 #ifdef AX_CONFIG_ALLOC
+
 #include <stdlib.h>
 char *strdup(const char *s)
 {
@@ -463,4 +464,5 @@ char *strdup(const char *s)
         return NULL;
     return memcpy(d, s, l + 1);
 }
-#endif
+
+#endif // AX_CONFIG_ALLOC

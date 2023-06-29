@@ -1,3 +1,5 @@
+#ifdef AX_CONFIG_FS
+
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -7,7 +9,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#ifdef AX_CONFIG_ALLOC
 int closedir(DIR *dir)
 {
     int ret = close(dir->fd);
@@ -40,9 +41,9 @@ DIR *fdopendir(int fd)
     return dir;
 }
 
-#endif
-
 int dirfd(DIR *d)
 {
     return d->fd;
 }
+
+#endif // AX_CONFIG_FS

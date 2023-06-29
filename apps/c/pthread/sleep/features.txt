@@ -1,5 +1,4 @@
-default
-paging
-alloc
-multitask
-irq
+ax/paging
+ax/irq
+lib/alloc
+lib/multitask

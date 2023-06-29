@@ -2,6 +2,8 @@
 #include <libax.h>
 #include <stdio.h>
 
+#ifdef AX_CONFIG_FD
+
 int fcntl(int fd, int cmd, ... /* arg */)
 {
     unsigned long arg;
@@ -13,7 +15,10 @@ int fcntl(int fd, int cmd, ... /* arg */)
     return ax_fcntl(fd, cmd, arg);
 }
 
+#endif // AX_CONFIG_FD
+
 #ifdef AX_CONFIG_FS
+
 int open(const char *filename, int flags, ...)
 {
     mode_t mode = 0;
@@ -27,4 +32,5 @@ int open(const char *filename, int flags, ...)
 
     return ax_open(filename, flags, mode);
 }
-#endif
+
+#endif // AX_CONFIG_FS

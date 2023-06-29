@@ -108,12 +108,14 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
         "\
         arch = {}\n\
         platform = {}\n\
+        target = {}\n\
         smp = {}\n\
         build_mode = {}\n\
         log_level = {}\n\
         ",
         option_env!("ARCH").unwrap_or(""),
         option_env!("PLATFORM").unwrap_or(""),
+        option_env!("TARGET").unwrap_or(""),
         option_env!("SMP").unwrap_or(""),
         option_env!("MODE").unwrap_or(""),
         option_env!("LOG").unwrap_or(""),

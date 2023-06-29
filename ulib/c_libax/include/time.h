@@ -38,4 +38,4 @@ int nanosleep(const struct timespec *requested_time, struct timespec *remaining)
 double difftime(time_t, time_t);
 #endif
 
-#endif
+#endif // __TIME_H__

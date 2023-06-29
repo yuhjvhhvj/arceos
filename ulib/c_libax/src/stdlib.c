@@ -58,7 +58,7 @@ void free(void *addr)
     return ax_free(addr);
 }
 
-#endif
+#endif // AX_CONFIG_ALLOC
 
 _Noreturn void abort(void)
 {
@@ -378,6 +378,7 @@ long long atoll(const char *s)
 }
 
 #ifdef AX_CONFIG_FP_SIMD
+
 float strtof(const char *restrict s, char **restrict p)
 {
     return ax_strtof(s, p);
@@ -388,4 +389,4 @@ double strtod(const char *restrict s, char **restrict p)
     return ax_strtod(s, p);
 }
 
-#endif
+#endif // AX_CONFIG_FP_SIMD

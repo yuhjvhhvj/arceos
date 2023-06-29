@@ -190,7 +190,8 @@ struct sockaddr_storage {
 
 typedef unsigned socklen_t;
 
-#if defined(AX_CONFIG_NET)
+#ifdef AX_CONFIG_NET
+
 int socket(int, int, int);
 int shutdown(int, int);
 
@@ -211,5 +212,6 @@ int setsockopt(int, int, int, const void *, socklen_t);
 int getsockname(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen);
 int getpeername(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen);
 
-#endif
-#endif
+#endif // AX_CONFIG_NET
+
+#endif // __SOCKET_H__

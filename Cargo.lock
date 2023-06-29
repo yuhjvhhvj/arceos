@@ -186,7 +186,6 @@ dependencies = [
 name = "axconfig"
 version = "0.1.0"
 dependencies = [
- "cfg-if",
  "serde",
  "toml_edit",
 ]
@@ -224,6 +223,23 @@ name = "axerrno"
 version = "0.1.0"
 dependencies = [
  "log",
+]
+
+[[package]]
+name = "axfeat"
+version = "0.1.0"
+dependencies = [
+ "axalloc",
+ "axdisplay",
+ "axdriver",
+ "axfs",
+ "axhal",
+ "axlog",
+ "axnet",
+ "axruntime",
+ "axsync",
+ "axtask",
+ "spinlock",
 ]
 
 [[package]]
@@ -359,13 +375,13 @@ dependencies = [
  "kernel_guard",
  "lazy_init",
  "percpu",
- "spinlock",
 ]
 
 [[package]]
 name = "axsync"
 version = "0.1.0"
 dependencies = [
+ "axsync",
  "axtask",
  "rand",
  "spinlock",
@@ -959,8 +975,8 @@ dependencies = [
  "axalloc",
  "axconfig",
  "axdisplay",
- "axdriver",
  "axerrno",
+ "axfeat",
  "axfs",
  "axhal",
  "axio",

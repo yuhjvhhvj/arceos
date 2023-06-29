@@ -1,5 +1,4 @@
-default
-fp_simd
-alloc
-paging
-fs
+ax/paging
+ax/fp_simd
+lib/alloc
+lib/fs

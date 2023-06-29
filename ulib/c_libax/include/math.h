@@ -1,14 +1,17 @@
 #ifndef _MATH_H
 #define _MATH_H
 
+#ifdef AX_CONFIG_FP_SIMD
+
 #define FP_NAN       0
 #define FP_INFINITE  1
 #define FP_ZERO      2
 #define FP_SUBNORMAL 3
 #define FP_NORMAL    4
-#if defined(AX_CONFIG_FP_SIMD)
+
 int __fpclassify(double);
 int __fpclassifyf(float);
+
 static __inline unsigned __FLOAT_BITS(float __f)
 {
     union {
@@ -18,6 +21,7 @@ static __inline unsigned __FLOAT_BITS(float __f)
     __u.__f = __f;
     return __u.__i;
 }
+
 static __inline unsigned long long __DOUBLE_BITS(double __f)
 {
     union {
@@ -36,5 +40,7 @@ static __inline unsigned long long __DOUBLE_BITS(double __f)
 
 double fabs(double);
 double floor(double);
-#endif
-#endif
+
+#endif // AX_CONFIG_FP_SIMD
+
+#endif // _MATH_H

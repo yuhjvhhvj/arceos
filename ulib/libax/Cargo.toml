@@ -13,86 +13,90 @@ authors = [
 description = "ArceOS user library with an interface similar to rust std"
 license = "GPL-3.0-or-later OR Apache-2.0"
 homepage = "https://github.com/rcore-os/arceos"
-repository = "https://github.com/rcore-os/arceos/tree/main/ulib/ibax"
+repository = "https://github.com/rcore-os/arceos/tree/main/ulib/libax"
 documentation = "https://rcore-os.github.io/arceos/libax/index.html"
 
 [features]
-# Generate bindings for C code
-cbindings = ["cbindgen", "bindgen", "dep:spin", "dep:lazy_static"]
+default = []
 
 # Multicore
-smp = ["axruntime/smp", "spinlock/smp"]
+smp = ["axfeat/smp"]
 
 # Floating point/SIMD
-fp_simd = ["axhal/fp_simd"]
-
-# Memory
-alloc = ["dep:axalloc", "axruntime/alloc", "axio/alloc"]
-paging = ["axruntime/paging"]
+fp_simd = ["axfeat/fp_simd"]
 
 # Interrupts
-irq = ["axruntime/irq"]
+irq = ["axfeat/irq"]
 
-# Multi-task
-multitask = ["alloc", "axtask", "axruntime/multitask", "axsync/multitask"]
-sched_fifo = ["axtask/sched_fifo"]
-sched_rr = ["axtask/sched_rr", "irq"]
-sched_cfs = ["axtask/sched_cfs", "irq"]
+# Memory
+alloc = ["dep:axalloc", "axfeat/alloc", "axio/alloc"]
+paging = ["axfeat/paging"]
+
+# Multi-threading and scheduler
+multitask = ["alloc", "axtask/multitask", "axsync/multitask", "axfeat/multitask"]
+sched_fifo = ["axfeat/sched_fifo"]
+sched_rr = ["axfeat/sched_rr"]
+sched_cfs = ["axfeat/sched_cfs"]
 
 # File system
-fs = ["alloc", "axruntime/fs", "dep:axdriver", "dep:axfs"]
-use-ramdisk = ["axdriver?/ramdisk", "axfs?/use-ramdisk"]
+fs = ["dep:axfs", "axfeat/fs", "fd"]
+use-ramdisk = ["axfeat/use-ramdisk"]
 
 # Networking
-net = ["alloc", "axruntime/net", "dep:axdriver", "dep:axnet"]
-
-# Pipe
-pipe = ["alloc"]
+net = ["alloc", "dep:axnet", "axfeat/net", "fd"]
 
 # Display
-display = ["axruntime/display", "dep:axdriver", "dep:axdisplay"]
+display = ["alloc", "dep:axdisplay", "axfeat/display"]
 
 # Device drivers
-bus-mmio = ["axdriver?/bus-mmio"]
-bus-pci = ["axdriver?/bus-pci"]
+bus-mmio = ["axfeat/bus-mmio"]
+bus-pci = ["axfeat/bus-pci"]
 
 # Logging
-log-level-off = ["axlog/log-level-off"]
-log-level-error = ["axlog/log-level-error"]
-log-level-warn = ["axlog/log-level-warn"]
-log-level-info = ["axlog/log-level-info"]
-log-level-debug = ["axlog/log-level-debug"]
-log-level-trace = ["axlog/log-level-trace"]
+log-level-off = ["axfeat/log-level-off"]
+log-level-error = ["axfeat/log-level-error"]
+log-level-warn = ["axfeat/log-level-warn"]
+log-level-info = ["axfeat/log-level-info"]
+log-level-debug = ["axfeat/log-level-debug"]
+log-level-trace = ["axfeat/log-level-trace"]
 
 # Platform
-platform-pc-x86 = ["axhal/platform-pc-x86", "bus-pci"]
-platform-qemu-virt-riscv = ["axhal/platform-qemu-virt-riscv", "bus-mmio"]
-platform-qemu-virt-aarch64 = ["axhal/platform-qemu-virt-aarch64", "bus-mmio"]
-platform-raspi4-aarch64 = ["axhal/platform-raspi4-aarch64", "bus-mmio"]
+platform-pc-x86 = ["axfeat/platform-pc-x86"]
+platform-qemu-virt-riscv = ["axfeat/platform-qemu-virt-riscv"]
+platform-qemu-virt-aarch64 = ["axfeat/platform-qemu-virt-aarch64"]
+platform-raspi4-aarch64 = ["axfeat/platform-raspi4-aarch64"]
 
-default = ["axtask?/sched_fifo"]
+# For C bindings
+cbindings = ["cbindgen", "bindgen", "dep:spin", "dep:lazy_static", "dep:flatten_objects", "dep:axconfig"]
+fd = ["alloc"]
+pipe = ["fd"]
+select = ["fd"]
+epoll = ["fd"]
 
 [dependencies]
-spin = { version = "0.9", optional = true }
-static_assertions = "1.1.0"
-lazy_static = { version = "1.4", features = ["spin_no_std"], optional = true }
-spinlock = { path = "../../crates/spinlock" }
-flatten_objects = { path = "../../crates/flatten_objects" }
-axio = { path = "../../crates/axio" }
-axerrno = { path = "../../crates/axerrno" }
-axalloc = { path = "../../modules/axalloc", optional = true }
-axconfig = { path = "../../modules/axconfig" }
-axdisplay = { path = "../../modules/axdisplay", optional = true }
-axdriver = { path = "../../modules/axdriver", optional = true }
+# ArceOS modules
+axfeat = { path = "../../api/axfeat" }
+axruntime = { path = "../../modules/axruntime" }
 axhal = { path = "../../modules/axhal" }
 axlog = { path = "../../modules/axlog" }
+axconfig = { path = "../../modules/axconfig" }
+axalloc = { path = "../../modules/axalloc", optional = true }
 axfs = { path = "../../modules/axfs", optional = true }
 axnet = { path = "../../modules/axnet", optional = true }
-axruntime = { path = "../../modules/axruntime", default-features = false }
-axsync = { path = "../../modules/axsync", default-features = false, optional = true }
-axtask = { path = "../../modules/axtask", default-features = false, optional = true }
+axdisplay = { path = "../../modules/axdisplay", optional = true }
+axsync = { path = "../../modules/axsync", optional = true }
+axtask = { path = "../../modules/axtask", optional = true }
+
+# Other crates
+axio = { path = "../../crates/axio" }
+axerrno = { path = "../../crates/axerrno" }
+spinlock = { path = "../../crates/spinlock" }
+static_assertions = "1.1.0"
+spin = { version = "0.9", optional = true }
+lazy_static = { version = "1.4", features = ["spin_no_std"], optional = true }
+flatten_objects = { path = "../../crates/flatten_objects", optional = true }
 
 [build-dependencies]
 cbindgen = { version = "0.24", optional = true }
 bindgen ={ version = "0.66", optional = true }
-axconfig = { path = "../../modules/axconfig" }
+axconfig = { path = "../../modules/axconfig", optional = true }
