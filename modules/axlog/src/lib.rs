@@ -39,17 +39,17 @@ pub use log::{debug, error, info, trace, warn};
 /// the end of the message.
 #[macro_export]
 macro_rules! ax_print {
-    ($fmt: literal $(, $($arg: tt)+)?) => {
-        $crate::__print_impl(format_args!($fmt $(, $($arg)+)?));
+    ($($arg:tt)*) => {
+        $crate::__print_impl(format_args!($($arg)*));
     }
 }
 
 /// Prints to the console, with a newline.
 #[macro_export]
 macro_rules! ax_println {
-    () => { ax_print!("\n") };
-    ($fmt: literal $(, $($arg: tt)+)?) => {
-        $crate::__print_impl(format_args!(concat!($fmt, "\n") $(, $($arg)+)?));
+    () => { $crate::ax_print!("\n") };
+    ($($arg:tt)*) => {
+        $crate::__print_impl(format_args!("{}\n", format_args!($($arg)*)));
     }
 }
 
@@ -197,13 +197,18 @@ impl Log for Logger {
     fn flush(&self) {}
 }
 
-#[doc(hidden)]
-pub fn __print_impl(args: fmt::Arguments) {
+/// Prints the formatted string to the console.
+pub fn print_fmt(args: fmt::Arguments) -> fmt::Result {
     use spinlock::SpinNoIrq; // TODO: more efficient
     static LOCK: SpinNoIrq<()> = SpinNoIrq::new(());
 
     let _guard = LOCK.lock();
-    Logger.write_fmt(args).unwrap();
+    Logger.write_fmt(args)
+}
+
+#[doc(hidden)]
+pub fn __print_impl(args: fmt::Arguments) {
+    print_fmt(args).unwrap();
 }
 
 /// Initializes the logger.
