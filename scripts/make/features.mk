@@ -20,8 +20,8 @@ ifeq ($(APP_TYPE),c)
   lib_prefix_after := libax/
   app_prefix_after :=
 else
-  ax_prefix_after := libax/
-  lib_prefix_after := libax/
+  ax_prefix_after := axstd/
+  lib_prefix_after := axstd/
   app_prefix_after :=
 endif
 

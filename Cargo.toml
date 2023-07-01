@@ -50,6 +50,7 @@ members = [
     "api/axfeat",
     "api/arceos_api",
 
+    "ulib/axstd",
     "ulib/libax",
 
     "apps/display",

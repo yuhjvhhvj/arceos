@@ -54,14 +54,14 @@ dependencies = [
 name = "arceos-exception"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axstd",
 ]
 
 [[package]]
 name = "arceos-helloworld"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axstd",
 ]
 
 [[package]]
@@ -82,7 +82,8 @@ dependencies = [
 name = "arceos-memtest"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axstd",
+ "rand",
 ]
 
 [[package]]
@@ -393,6 +394,16 @@ dependencies = [
  "kernel_guard",
  "lazy_init",
  "percpu",
+]
+
+[[package]]
+name = "axstd"
+version = "0.1.0"
+dependencies = [
+ "arceos_api",
+ "axerrno",
+ "axfeat",
+ "axio",
 ]
 
 [[package]]
