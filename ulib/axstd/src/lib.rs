@@ -27,6 +27,7 @@
 //!     - `fs`: Enable file system support.
 //!     - `use-ramdisk`: Use the RAM disk to emulate the block device.
 //!     - `net`: Enable networking support.
+//!     - `dns`: Enable DNS lookup support.
 //!     - `display`: Enable graphics support.
 //!     - `bus-mmio`: Use device tree to probe all MMIO devices.
 //!     - `bus-pci`: Use PCI bus to probe all PCI devices.
@@ -43,6 +44,7 @@
 //! [ArceOS]: https://github.com/rcore-os/arceos
 
 #![cfg_attr(all(not(test), not(doc)), no_std)]
+#![feature(ip_in_core)]
 #![feature(doc_cfg)]
 #![feature(doc_auto_cfg)]
 
@@ -61,3 +63,6 @@ pub mod os;
 pub mod sync;
 pub mod thread;
 pub mod time;
+
+#[cfg(feature = "net")]
+pub mod net;

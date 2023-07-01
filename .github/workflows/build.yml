@@ -65,14 +65,14 @@ jobs:
       run: make ARCH=${{ matrix.arch }} A=apps/task/priority
     # - name: Build fs/shell
     #   run: make ARCH=${{ matrix.arch }} A=apps/fs/shell
-    # - name: Build net/echoserver
-    #   run: make ARCH=${{ matrix.arch }} A=apps/net/echoserver
-    # - name: Build net/httpclient
-    #   run: make ARCH=${{ matrix.arch }} A=apps/net/httpclient
-    # - name: Build net/httpserver
-    #   run: make ARCH=${{ matrix.arch }} A=apps/net/httpserver
-    # - name: Build net/udpserver
-    #   run: make ARCH=${{ matrix.arch }} A=apps/net/udpserver
+    - name: Build net/echoserver
+      run: make ARCH=${{ matrix.arch }} A=apps/net/echoserver
+    - name: Build net/httpclient
+      run: make ARCH=${{ matrix.arch }} A=apps/net/httpclient
+    - name: Build net/httpserver
+      run: make ARCH=${{ matrix.arch }} A=apps/net/httpserver
+    - name: Build net/udpserver
+      run: make ARCH=${{ matrix.arch }} A=apps/net/udpserver
 
     - uses: ./.github/workflows/actions/setup-musl
       with:
@@ -119,3 +119,11 @@ jobs:
       run: cargo build -p arceos-sleep
     - name: Build task/priority
       run: cargo build -p arceos-priority
+    - name: Build net/echoserver
+      run: cargo build -p arceos-echoserver
+    - name: Build net/httpclient
+      run: cargo build -p arceos-httpclient
+    - name: Build net/httpserver
+      run: cargo build -p arceos-httpserver
+    - name: Build net/udpserver
+      run: cargo build -p arceos-udpserver

@@ -44,6 +44,7 @@ use-ramdisk = ["axfeat/use-ramdisk"]
 
 # Networking
 net = ["arceos_api/net", "axfeat/net"]
+dns = []
 
 # Display
 display = ["axfeat/display"]

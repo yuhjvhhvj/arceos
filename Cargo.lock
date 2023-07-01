@@ -47,7 +47,7 @@ dependencies = [
 name = "arceos-echoserver"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axstd",
 ]
 
 [[package]]
@@ -68,14 +68,14 @@ dependencies = [
 name = "arceos-httpclient"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axstd",
 ]
 
 [[package]]
 name = "arceos-httpserver"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axstd",
 ]
 
 [[package]]
