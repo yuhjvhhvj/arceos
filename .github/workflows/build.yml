@@ -55,14 +55,14 @@ jobs:
       run: make ARCH=${{ matrix.arch }} A=apps/exception
     - name: Build display
       run: make ARCH=${{ matrix.arch }} A=apps/display
-    # - name: Build task/yield
-    #   run: make ARCH=${{ matrix.arch }} A=apps/task/yield
-    # - name: Build task/parallel
-    #   run: make ARCH=${{ matrix.arch }} A=apps/task/parallel
-    # - name: Build task/sleep
-    #   run: make ARCH=${{ matrix.arch }} A=apps/task/sleep
-    # - name: Build task/priority
-    #   run: make ARCH=${{ matrix.arch }} A=apps/task/priority
+    - name: Build task/yield
+      run: make ARCH=${{ matrix.arch }} A=apps/task/yield
+    - name: Build task/parallel
+      run: make ARCH=${{ matrix.arch }} A=apps/task/parallel
+    - name: Build task/sleep
+      run: make ARCH=${{ matrix.arch }} A=apps/task/sleep
+    - name: Build task/priority
+      run: make ARCH=${{ matrix.arch }} A=apps/task/priority
     # - name: Build fs/shell
     #   run: make ARCH=${{ matrix.arch }} A=apps/fs/shell
     # - name: Build net/echoserver
@@ -111,3 +111,11 @@ jobs:
       run: cargo build -p arceos-memtest
     - name: Build exception
       run: cargo build -p arceos-exception
+    - name: Build task/yield
+      run: cargo build -p arceos-yield
+    - name: Build task/parallel
+      run: cargo build -p arceos-parallel
+    - name: Build task/sleep
+      run: cargo build -p arceos-sleep
+    - name: Build task/priority
+      run: cargo build -p arceos-priority

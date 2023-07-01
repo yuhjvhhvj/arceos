@@ -97,6 +97,6 @@ impl<T> BaseScheduler for FifoScheduler<T> {
     }
 
     fn set_priority(&mut self, _task: &Self::SchedItem, _prio: isize) -> bool {
-        false
+        true
     }
 }

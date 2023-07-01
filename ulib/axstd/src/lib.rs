@@ -57,4 +57,7 @@ pub use alloc::{boxed, collections, format, string, vec};
 pub use core::{arch, cell, cmp, hint, marker, mem, ops, ptr, slice, str};
 
 pub mod io;
+pub mod os;
+pub mod sync;
+pub mod thread;
 pub mod time;

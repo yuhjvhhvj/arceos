@@ -90,14 +90,16 @@ dependencies = [
 name = "arceos-parallel"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axstd",
+ "rand",
 ]
 
 [[package]]
 name = "arceos-priority"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axfeat",
+ "axstd",
 ]
 
 [[package]]
@@ -115,7 +117,7 @@ dependencies = [
 name = "arceos-sleep"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axstd",
 ]
 
 [[package]]
@@ -129,7 +131,8 @@ dependencies = [
 name = "arceos-yield"
 version = "0.1.0"
 dependencies = [
- "libax",
+ "axfeat",
+ "axstd",
 ]
 
 [[package]]
