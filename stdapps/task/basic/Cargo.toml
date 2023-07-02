@@ -9,3 +9,6 @@ authors = ["Yuekai Jia <equation618@gmail.com>"]
 [features]
 
 [dependencies]
+
+[package.metadata.arceos.features]
+default = ["multitask", "irq"]

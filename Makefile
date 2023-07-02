@@ -6,7 +6,7 @@ LOG ?= warn
 STD ?= n
 V ?=
 
-A ?= stdapps/net/httpclient
+A ?= apps/helloworld
 APP ?= $(A)
 APP_FEATURES ?=
 STD_FEATURES ?=
@@ -32,46 +32,6 @@ endif
 # TODO: refactor features passing
 ifeq ($(STD), y)
   MAJOR_DST := [STD]
-  ifneq ($(wildcard $(APP)/std_features.txt),)
-    EMPTY :=
-    COMMA := ,
-    SPACE := $(EMPTY) $(EMPTY)
-
-    # Replace SPACE with COMMA ',' and so do at both ends.
-	# Match '$(COMMA)FOO$(COMMA)' rather than bare 'FOO'
-	# to avoid mismatch sth as 'aFOOb'.
-    DEF_FEATURES := $(shell cat $(APP)/std_features.txt) $(STD_FEATURES)
-    DEF_FEATURES := $(COMMA)$(subst $(SPACE),$(COMMA),$(DEF_FEATURES))$(COMMA)
-    $(info "######## [$(DEF_FEATURES)]")
-    ifneq ($(findstring $(COMMA)multitask$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [multitask]")
-      MULTITASK := y
-    endif
-    ifneq ($(findstring $(COMMA)irq$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [irq]")
-      IRQ := y
-    endif
-    ifneq ($(findstring $(COMMA)fs$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [fs]")
-      FS := y
-    endif
-    ifneq ($(findstring $(COMMA)net$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [net]")
-      NET := y
-    endif
-    ifneq ($(findstring $(COMMA)sched_rr$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [sched_rr]")
-      SCHED_POLICY := sched_rr
-    endif
-    ifneq ($(findstring $(COMMA)sched_cfs$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [sched_cfs]")
-      SCHED_POLICY := sched_cfs
-    endif
-    ifneq ($(findstring $(COMMA)use_ramfs$(COMMA), $(DEF_FEATURES)),)
-      $(info "--- [use_ramfs]")
-      FS_TYPE := ramfs
-    endif
-  endif
 endif
 
 ifeq ($(wildcard $(APP)),)
@@ -136,16 +96,7 @@ OUT_BIN := $(OUT_DIR)/$(APP_NAME)_$(PLATFORM).bin
 
 all: build
 
-ifeq ($(STD), y)
-APP_CONFIG := $(shell RUSTFLAGS="" cargo run \
-	--manifest-path tools/parse_features/Cargo.toml\
-	$(CURDIR)/$(APP)/Cargo.toml)
-
-$(eval include $(APP_CONFIG))
-$(info "###### $(APP_CONFIG) ######")
-$(info Config [STD] APP: $(APP), FS=$(FS), NET=$(NET))
-endif
-
+include scripts/make/config.mk
 include scripts/make/utils.mk
 include scripts/make/cargo.mk
 include scripts/make/qemu.mk

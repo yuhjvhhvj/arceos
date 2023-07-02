@@ -45,6 +45,7 @@ pub fn sys_alloc(layout: Layout) -> *mut u8 {
     }
 }
 
+#[allow(clippy::missing_safety_doc)]
 #[no_mangle]
 pub unsafe fn sys_realloc(ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
     // SAFETY: the caller must ensure that the `new_size` does not overflow.
@@ -78,6 +79,7 @@ pub fn sys_console_read_bytes(bytes: &mut [u8]) -> usize {
     axhal::console::read_bytes(bytes)
 }
 
+#[allow(clippy::missing_safety_doc)]
 #[no_mangle]
 pub unsafe fn sys_clock_gettime(_clock_id: u64, tp: *mut timespec) -> i32 {
     let now = current_time();
