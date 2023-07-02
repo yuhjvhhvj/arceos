@@ -11,6 +11,8 @@
 
 #![no_std]
 
+use core::fmt;
+
 mod linux_errno {
     include!(concat!(env!("OUT_DIR"), "/linux_errno.rs"));
 }
@@ -193,6 +195,12 @@ impl AxError {
     }
 }
 
+impl fmt::Display for AxError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
 impl From<AxError> for LinuxError {
     fn from(e: AxError) -> Self {
         use AxError::*;
@@ -216,6 +224,12 @@ impl From<AxError> for LinuxError {
             UnexpectedEof | WriteZero => LinuxError::EIO,
             WouldBlock => LinuxError::EAGAIN,
         }
+    }
+}
+
+impl fmt::Display for LinuxError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }
 
