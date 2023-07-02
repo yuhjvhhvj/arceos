@@ -6,7 +6,7 @@ LOG ?= warn
 STD ?= n
 V ?=
 
-A ?= apps/helloworld
+A ?= stdapps/net/httpclient
 APP ?= $(A)
 APP_FEATURES ?=
 STD_FEATURES ?=
@@ -136,6 +136,16 @@ OUT_BIN := $(OUT_DIR)/$(APP_NAME)_$(PLATFORM).bin
 
 all: build
 
+ifeq ($(STD), y)
+APP_CONFIG := $(shell RUSTFLAGS="" cargo run \
+	--manifest-path tools/parse_features/Cargo.toml\
+	$(CURDIR)/$(APP)/Cargo.toml)
+
+$(eval include $(APP_CONFIG))
+$(info "###### $(APP_CONFIG) ######")
+$(info Config [STD] APP: $(APP), FS=$(FS), NET=$(NET))
+endif
+
 include scripts/make/utils.mk
 include scripts/make/cargo.mk
 include scripts/make/qemu.mk
@@ -206,5 +216,6 @@ clean_c:
 clean_std:
 	rm -rf third_party/rust/target
 	rm -rf sysroot
+	rm -f $(APP_CONFIG)
 
 .PHONY: all build disasm run justrun debug clippy fmt fmt_c test test_no_fail_fast clean clean_c clean_std doc disk_image

@@ -13,3 +13,5 @@ libarceos.redefine-syms
 *.swp
 fat16.img
 fat32.img
+config_env
+tools/parse_features/target

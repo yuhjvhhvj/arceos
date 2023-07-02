@@ -10,3 +10,6 @@ authors = ["Yuekai Jia <equation618@gmail.com>", "Dashuai Wu <wudashuaijss@foxma
 [features]
 default = []
 dns = []
+
+[package.metadata.arceos.features]
+default = ["net"]
