@@ -8,6 +8,7 @@
 #     - `V`: Verbose level: (empty), 1, 2
 # * App options:
 #     - `A` or `APP`: Path to the application
+#     - `STD`: Whether to build the rust std library
 #     - `FEATURES`: Features to be enabled. Each feature need to start with one
 #       of the prefix `ax/`, `lib/` or `app/`. See "scripts/make/features.mk"
 #       for more details.
@@ -31,6 +32,7 @@ V ?=
 # App options
 A ?= apps/helloworld
 APP ?= $(A)
+STD ?= n
 FEATURES ?=
 
 # QEMU options
@@ -49,7 +51,11 @@ ifeq ($(wildcard $(APP)),)
 endif
 
 ifneq ($(wildcard $(APP)/Cargo.toml),)
-  APP_TYPE := rust
+  ifeq ($(STD), y)
+    APP_TYPE := rust_std
+  else
+    APP_TYPE := rust
+  endif
 else
   APP_TYPE := c
 endif
@@ -71,6 +77,14 @@ else ifeq ($(ARCH), aarch64)
   TARGET := aarch64-unknown-none-softfloat
 else
   $(error "ARCH" must be one of "x86_64", "riscv64", or "aarch64")
+endif
+
+ifeq ($(APP_TYPE), rust_std)
+  ifeq ($(ARCH), x86_64)
+    TARGET := x86_64-unknown-arceos
+  else
+    $(error "ARCH" must be "x86_64" when "STD" is enabled)
+  endif
 endif
 
 export ARCH
@@ -163,7 +177,7 @@ else
 	$(call make_disk_image,fat32,$(DISK_IMG))
 endif
 
-clean: clean_c
+clean: clean_c clean_std
 	rm -rf $(APP)/*.bin $(APP)/*.elf
 	cargo clean
 
@@ -171,4 +185,8 @@ clean_c:
 	rm -rf ulib/c_libax/build_*
 	rm -rf $(app-objs)
 
-.PHONY: all build disasm run justrun debug clippy fmt fmt_c test test_no_fail_fast clean clean_c doc disk_image
+clean_std:
+	rm -rf third_party/rust/target
+	rm -rf sysroot
+
+.PHONY: all build disasm run justrun debug clippy fmt fmt_c test test_no_fail_fast clean clean_c clean_std doc disk_image

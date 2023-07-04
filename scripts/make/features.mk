@@ -19,6 +19,10 @@ ifeq ($(APP_TYPE),c)
   ax_prefix_after := axfeat/
   lib_prefix_after := libax/
   app_prefix_after :=
+else ifeq ($(APP_TYPE),rust_std)
+  ax_prefix_after := axfeat/
+  lib_prefix_after := arceos_api/
+  app_prefix_after :=
 else
   ax_prefix_after := axstd/
   lib_prefix_after := axstd/
@@ -38,6 +42,9 @@ ifeq ($(APP_TYPE), c)
     override FEATURES += lib/fd
   endif
   override FEATURES := $(strip $(FEATURES) lib/cbindings)
+else ifeq ($(APP_TYPE), rust_std)
+  std_feat := $(shell cat $(APP)/Cargo.toml | grep "axstd = " | sed -n 's/.*features = \[\(.*\)\].*/\1/p' | tr ',"' ' ')
+  override FEATURES += $(addprefix $(lib_prefix),$(std_feat))
 endif
 
 ax_feat := platform-$(PLATFORM)
