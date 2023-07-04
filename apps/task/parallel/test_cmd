@@ -1,3 +1,7 @@
-test_one "LOG=info" "expect_info_smp1_fifo.out"
+if [ "${STD}" == "y" ]; then
+    test_one "LOG=info" "expect_info_smp1_fifo_std.out"
+else
+    test_one "LOG=info" "expect_info_smp1_fifo.out"
+fi
 test_one "SMP=4 LOG=info FEATURES=ax/sched_rr" "expect_info_smp4_rr.out"
 test_one "SMP=4 LOG=info FEATURES=ax/sched_cfs" "expect_info_smp4_cfs.out"

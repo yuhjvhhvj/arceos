@@ -1,3 +1,9 @@
-test_one "LOG=debug" "expect_debug_smp1_fifo.out"
-test_one "SMP=4 LOG=info" "expect_info_smp4_fifo.out"
-test_one "SMP=4 LOG=info FEATURES=app/sched_rr" "expect_info_smp4_rr.out"
+if [ "${STD}" == "y" ]; then
+    test_one "LOG=debug" "expect_debug_smp1_fifo_std.out"
+    test_one "SMP=4 LOG=info" "expect_info_smp4_fifo_std.out"
+    test_one "SMP=4 LOG=info FEATURES=ax/sched_rr,app/sched_rr" "expect_info_smp4_rr_std.out"
+else
+    test_one "LOG=debug" "expect_debug_smp1_fifo.out"
+    test_one "SMP=4 LOG=info" "expect_info_smp4_fifo.out"
+    test_one "SMP=4 LOG=info FEATURES=app/sched_rr" "expect_info_smp4_rr.out"
+fi

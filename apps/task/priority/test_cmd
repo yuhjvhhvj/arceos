@@ -1,4 +1,11 @@
-test_one "SMP=1 LOG=info" "expect_info_smp1_fifo.out"
-test_one "SMP=1 LOG=info FEATURES=app/sched_cfs" "expect_info_smp1_cfs.out"
-test_one "SMP=1 LOG=info FEATURES=app/sched_rr" "expect_info_smp1_rr.out"
-test_one "SMP=4 LOG=info FEATURES=app/sched_cfs" "expect_info_smp4_cfs.out"
+if [ "${STD}" == "y" ]; then
+    test_one "SMP=1 LOG=info" "expect_info_smp1_fifo_std.out"
+    test_one "SMP=1 LOG=info FEATURES=ax/sched_cfs,app/sched_cfs" "expect_info_smp1_cfs_std.out"
+    test_one "SMP=1 LOG=info FEATURES=ax/sched_rr,app/sched_rr" "expect_info_smp1_rr_std.out"
+    test_one "SMP=4 LOG=info FEATURES=ax/sched_cfs,app/sched_cfs" "expect_info_smp4_cfs_std.out"
+else
+    test_one "SMP=1 LOG=info" "expect_info_smp1_fifo.out"
+    test_one "SMP=1 LOG=info FEATURES=app/sched_cfs" "expect_info_smp1_cfs.out"
+    test_one "SMP=1 LOG=info FEATURES=app/sched_rr" "expect_info_smp1_rr.out"
+    test_one "SMP=4 LOG=info FEATURES=app/sched_cfs" "expect_info_smp4_cfs.out"
+fi
