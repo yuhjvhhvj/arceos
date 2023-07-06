@@ -128,7 +128,7 @@ mod no_dns {
 #[doc(cfg(feature = "net"))]
 mod dns {
     use super::*;
-    use alloc::{vec, vec::Vec};
+    use alloc::vec;
 
     impl ToSocketAddrs for (&str, u16) {
         type Iter = vec::IntoIter<SocketAddr>;
@@ -141,11 +141,7 @@ mod dns {
                 return Ok(vec![SocketAddr::V4(addr)].into_iter());
             }
 
-            Ok(arceos_api::net::ax_get_addr_info(host)?
-                .into_iter()
-                .map(|a| SocketAddr::new(a, port))
-                .collect::<Vec<_>>()
-                .into_iter())
+            Ok(arceos_api::net::ax_get_addr_info(host, Some(port))?.into_iter())
         }
     }
 
@@ -166,11 +162,7 @@ mod dns {
                 .parse()
                 .map_err(|_| axerrno::ax_err_type!(InvalidInput, "invalid port value"))?;
 
-            Ok(arceos_api::net::ax_get_addr_info(host)?
-                .into_iter()
-                .map(|a| SocketAddr::new(a, port))
-                .collect::<Vec<_>>()
-                .into_iter())
+            Ok(arceos_api::net::ax_get_addr_info(host, Some(port))?.into_iter())
         }
     }
 

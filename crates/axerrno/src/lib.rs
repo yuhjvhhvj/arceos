@@ -38,6 +38,8 @@ pub enum AxError {
     BadState,
     /// The connection was refused by the remote server,
     ConnectionRefused,
+    /// The connection was reset by the remote server.
+    ConnectionReset,
     /// A non-empty directory was specified where an empty directory was expected.
     DirectoryNotEmpty,
     /// Data not valid for the operation were encountered.
@@ -209,6 +211,7 @@ impl From<AxError> for LinuxError {
             AlreadyExists => LinuxError::EEXIST,
             BadAddress | BadState => LinuxError::EFAULT,
             ConnectionRefused => LinuxError::ECONNREFUSED,
+            ConnectionReset => LinuxError::ECONNRESET,
             DirectoryNotEmpty => LinuxError::ENOTEMPTY,
             InvalidInput | InvalidData => LinuxError::EINVAL,
             Io => LinuxError::EIO,

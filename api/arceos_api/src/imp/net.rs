@@ -37,29 +37,29 @@ pub fn ax_tcp_peer_addr(socket: &AxTcpSocketHandle) -> AxResult<SocketAddr> {
     socket.0.peer_addr().map(into_core_sockaddr)
 }
 
-pub fn ax_tcp_connect(socket: &mut AxTcpSocketHandle, addr: SocketAddr) -> AxResult {
+pub fn ax_tcp_connect(socket: &AxTcpSocketHandle, addr: SocketAddr) -> AxResult {
     socket.0.connect(into_ax_sockaddr(addr))
 }
 
-pub fn ax_tcp_bind(socket: &mut AxTcpSocketHandle, addr: SocketAddr) -> AxResult {
+pub fn ax_tcp_bind(socket: &AxTcpSocketHandle, addr: SocketAddr) -> AxResult {
     socket.0.bind(into_ax_sockaddr(addr))
 }
 
-pub fn ax_tcp_listen(socket: &mut AxTcpSocketHandle, _backlog: usize) -> AxResult {
+pub fn ax_tcp_listen(socket: &AxTcpSocketHandle, _backlog: usize) -> AxResult {
     socket.0.listen()
 }
 
-pub fn ax_tcp_accept(socket: &mut AxTcpSocketHandle) -> AxResult<(AxTcpSocketHandle, SocketAddr)> {
+pub fn ax_tcp_accept(socket: &AxTcpSocketHandle) -> AxResult<(AxTcpSocketHandle, SocketAddr)> {
     let new_sock = socket.0.accept()?;
     let addr = new_sock.peer_addr().map(into_core_sockaddr)?;
     Ok((AxTcpSocketHandle(new_sock), addr))
 }
 
-pub fn ax_tcp_send(socket: &mut AxTcpSocketHandle, buf: &[u8]) -> AxResult<usize> {
+pub fn ax_tcp_send(socket: &AxTcpSocketHandle, buf: &[u8]) -> AxResult<usize> {
     socket.0.send(buf)
 }
 
-pub fn ax_tcp_recv(socket: &mut AxTcpSocketHandle, buf: &mut [u8]) -> AxResult<usize> {
+pub fn ax_tcp_recv(socket: &AxTcpSocketHandle, buf: &mut [u8]) -> AxResult<usize> {
     socket.0.recv(buf)
 }
 
@@ -67,9 +67,12 @@ pub fn ax_tcp_shutdown(socket: &AxTcpSocketHandle) -> AxResult {
     socket.0.shutdown()
 }
 
-pub fn ax_get_addr_info(domain_name: &str) -> AxResult<alloc::vec::Vec<IpAddr>> {
+pub fn ax_get_addr_info(
+    domain_name: &str,
+    port: Option<u16>,
+) -> AxResult<alloc::vec::Vec<SocketAddr>> {
     Ok(axnet::resolve_socket_addr(domain_name)?
         .into_iter()
-        .map(into_core_ipaddr)
+        .map(|ip| SocketAddr::new(into_core_ipaddr(ip), port.unwrap_or(0)))
         .collect())
 }

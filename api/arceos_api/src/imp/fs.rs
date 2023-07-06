@@ -4,8 +4,8 @@ use axfs::fops::{Directory, File};
 
 pub use axfs::fops::DirEntry as AxDirEntry;
 pub use axfs::fops::FileAttr as AxFileAttr;
-pub use axfs::fops::FileType as AxFileType;
 pub use axfs::fops::FilePerm as AxFilePerm;
+pub use axfs::fops::FileType as AxFileType;
 pub use axfs::fops::OpenOptions as AxOpenOptions;
 pub use axio::SeekFrom as AxSeekFrom;
 
@@ -24,8 +24,16 @@ pub fn ax_read_file(file: &mut AxFileHandle, buf: &mut [u8]) -> AxResult<usize> 
     file.0.read(buf)
 }
 
+pub fn ax_read_file_at(file: &AxFileHandle, offset: u64, buf: &mut [u8]) -> AxResult<usize> {
+    file.0.read_at(offset, buf)
+}
+
 pub fn ax_write_file(file: &mut AxFileHandle, buf: &[u8]) -> AxResult<usize> {
     file.0.write(buf)
+}
+
+pub fn ax_write_file_at(file: &AxFileHandle, offset: u64, buf: &[u8]) -> AxResult<usize> {
+    file.0.write_at(offset, buf)
 }
 
 pub fn ax_truncate_file(file: &AxFileHandle, size: u64) -> AxResult {

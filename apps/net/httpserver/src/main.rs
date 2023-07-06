@@ -70,7 +70,7 @@ fn http_server(mut stream: TcpStream) -> io::Result<()> {
 }
 
 fn accept_loop() -> io::Result<()> {
-    let mut listener = TcpListener::bind((LOCAL_IP, LOCAL_PORT))?;
+    let listener = TcpListener::bind((LOCAL_IP, LOCAL_PORT))?;
     println!("listen on: http://{}/", listener.local_addr().unwrap());
 
     let mut i = 0;

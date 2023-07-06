@@ -84,7 +84,7 @@ impl ListenTable {
         }
     }
 
-    pub fn accept(&self, port: u16) -> AxResult<(SocketHandle, Option<SocketAddr>)> {
+    pub fn accept(&self, port: u16) -> AxResult<(SocketHandle, SocketAddr)> {
         if let Some(entry) = self.tcp[port as usize].lock().deref_mut() {
             let syn_queue = &mut entry.syn_queue;
             if let Some(&handle) = syn_queue.front() {
@@ -151,11 +151,11 @@ impl ListenTable {
     }
 }
 
-fn get_socket_info(handle: SocketHandle) -> (bool, Option<SocketAddr>) {
+fn get_socket_info(handle: SocketHandle) -> (bool, SocketAddr) {
     let (connected, peer_addr) = SOCKET_SET.with_socket::<tcp::Socket, _, _>(handle, |socket| {
         (
             !matches!(socket.state(), State::Listen | State::SynReceived),
-            socket.remote_endpoint(),
+            socket.remote_endpoint().unwrap(),
         )
     });
     (connected, peer_addr)

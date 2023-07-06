@@ -13,8 +13,8 @@ impl TcpStream {
     pub fn connect<A: ToSocketAddrs>(addr: A) -> io::Result<TcpStream> {
         super::each_addr(addr, |addr: io::Result<&SocketAddr>| {
             let addr = addr?;
-            let mut socket = api::ax_tcp_socket();
-            api::ax_tcp_connect(&mut socket, *addr)?;
+            let socket = api::ax_tcp_socket();
+            api::ax_tcp_connect(&socket, *addr)?;
             Ok(TcpStream(socket))
         })
     }
@@ -37,13 +37,13 @@ impl TcpStream {
 
 impl Read for TcpStream {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        api::ax_tcp_recv(&mut self.0, buf)
+        api::ax_tcp_recv(&self.0, buf)
     }
 }
 
 impl Write for TcpStream {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        api::ax_tcp_send(&mut self.0, buf)
+        api::ax_tcp_send(&self.0, buf)
     }
 
     fn flush(&mut self) -> io::Result<()> {
@@ -58,9 +58,9 @@ impl TcpListener {
         super::each_addr(addr, |addr: io::Result<&SocketAddr>| {
             let addr = addr?;
             let backlog = 128;
-            let mut socket = api::ax_tcp_socket();
-            api::ax_tcp_bind(&mut socket, *addr)?;
-            api::ax_tcp_listen(&mut socket, backlog)?;
+            let socket = api::ax_tcp_socket();
+            api::ax_tcp_bind(&socket, *addr)?;
+            api::ax_tcp_listen(&socket, backlog)?;
             Ok(TcpListener(socket))
         })
     }
@@ -75,7 +75,7 @@ impl TcpListener {
     /// This function will block the calling thread until a new TCP connection
     /// is established. When established, the corresponding [`TcpStream`] and the
     /// remote peer's address will be returned.
-    pub fn accept(&mut self) -> io::Result<(TcpStream, SocketAddr)> {
-        api::ax_tcp_accept(&mut self.0).map(|(a, b)| (TcpStream(a), b))
+    pub fn accept(&self) -> io::Result<(TcpStream, SocketAddr)> {
+        api::ax_tcp_accept(&self.0).map(|(a, b)| (TcpStream(a), b))
     }
 }

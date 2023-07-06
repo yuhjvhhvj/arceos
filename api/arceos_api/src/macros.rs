@@ -40,7 +40,7 @@ macro_rules! define_api {
             #[allow(unused_variables)]
             #[cfg(all(feature = "dummy-if-not-enabled", not(feature = $feature)))]
             $vis fn $name( $($arg : $type),* ) $( -> $ret )? {
-                unimplemented!()
+                unimplemented!(stringify!($name))
             }
         )+
     };

@@ -15,7 +15,7 @@ pub struct TcpListener {
 impl TcpStream {
     /// Opens a TCP connection to a remote host.
     pub fn connect(addr: SocketAddr) -> io::Result<Self> {
-        let mut socket = TcpSocket::new();
+        let socket = TcpSocket::new();
         socket.connect(addr)?;
         Ok(Self { socket })
     }
@@ -56,7 +56,7 @@ impl TcpListener {
     /// Creates a new `TcpListener` which will be bound to the specified
     /// address.
     pub fn bind(addr: SocketAddr) -> io::Result<Self> {
-        let mut socket = TcpSocket::new();
+        let socket = TcpSocket::new();
         socket.bind(addr)?;
         socket.listen()?;
         Ok(Self { socket })

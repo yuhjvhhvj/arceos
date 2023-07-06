@@ -127,7 +127,9 @@ pub mod fs {
         pub fn ax_open_dir(path: &str, opts: &AxOpenOptions) -> AxResult<AxDirHandle>;
 
         pub fn ax_read_file(file: &mut AxFileHandle, buf: &mut [u8]) -> AxResult<usize>;
+        pub fn ax_read_file_at(file: &AxFileHandle, offset: u64, buf: &mut [u8]) -> AxResult<usize>;
         pub fn ax_write_file(file: &mut AxFileHandle, buf: &[u8]) -> AxResult<usize>;
+        pub fn ax_write_file_at(file: &AxFileHandle, offset: u64, buf: &[u8]) -> AxResult<usize>;
         pub fn ax_truncate_file(file: &AxFileHandle, size: u64) -> AxResult;
         pub fn ax_flush_file(file: &AxFileHandle) -> AxResult;
         pub fn ax_seek_file(file: &mut AxFileHandle, pos: AxSeekFrom) -> AxResult<u64>;
@@ -146,7 +148,7 @@ pub mod fs {
 /// Networking primitives for TCP/UDP communication.
 pub mod net {
     use crate::AxResult;
-    use core::net::{IpAddr, SocketAddr};
+    use core::net::SocketAddr;
 
     define_api_type! {
         @cfg "net";
@@ -159,15 +161,15 @@ pub mod net {
         pub fn ax_tcp_socket_addr(socket: &AxTcpSocketHandle) -> AxResult<SocketAddr>;
         pub fn ax_tcp_peer_addr(socket: &AxTcpSocketHandle) -> AxResult<SocketAddr>;
 
-        pub fn ax_tcp_connect(handle: &mut AxTcpSocketHandle, addr: SocketAddr) -> AxResult;
-        pub fn ax_tcp_bind(socket: &mut AxTcpSocketHandle, addr: SocketAddr) -> AxResult;
-        pub fn ax_tcp_listen(socket: &mut AxTcpSocketHandle, _backlog: usize) -> AxResult;
-        pub fn ax_tcp_accept(socket: &mut AxTcpSocketHandle) -> AxResult<(AxTcpSocketHandle, SocketAddr)>;
+        pub fn ax_tcp_connect(handle: &AxTcpSocketHandle, addr: SocketAddr) -> AxResult;
+        pub fn ax_tcp_bind(socket: &AxTcpSocketHandle, addr: SocketAddr) -> AxResult;
+        pub fn ax_tcp_listen(socket: &AxTcpSocketHandle, _backlog: usize) -> AxResult;
+        pub fn ax_tcp_accept(socket: &AxTcpSocketHandle) -> AxResult<(AxTcpSocketHandle, SocketAddr)>;
 
-        pub fn ax_tcp_send(socket: &mut AxTcpSocketHandle, buf: &[u8]) -> AxResult<usize>;
-        pub fn ax_tcp_recv(socket: &mut AxTcpSocketHandle, buf: &mut [u8]) -> AxResult<usize>;
+        pub fn ax_tcp_send(socket: &AxTcpSocketHandle, buf: &[u8]) -> AxResult<usize>;
+        pub fn ax_tcp_recv(socket: &AxTcpSocketHandle, buf: &mut [u8]) -> AxResult<usize>;
         pub fn ax_tcp_shutdown(socket: &AxTcpSocketHandle) -> AxResult;
 
-        pub fn ax_get_addr_info(domain_name: &str) -> AxResult<alloc::vec::Vec<IpAddr>>;
+        pub fn ax_get_addr_info(domain_name: &str, port: Option<u16>) -> AxResult<alloc::vec::Vec<SocketAddr>>;
     }
 }
