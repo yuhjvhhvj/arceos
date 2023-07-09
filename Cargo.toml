@@ -66,6 +66,8 @@ members = [
     "apps/task/sleep",
     "apps/task/yield",
     "apps/task/priority",
+
+    "apps/std/mio-tcpserver",
 ]
 
 [profile.release]
