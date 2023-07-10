@@ -60,11 +60,11 @@ macro_rules! info {
 }
 
 fn http_server(mut stream: TcpStream) -> io::Result<()> {
-    let mut buf = [0u8; 1024];
+    let mut buf = [0u8; 4096];
     let _len = stream.read(&mut buf)?;
 
-    let reponse = format!(header!(), CONTENT.len(), CONTENT);
-    stream.write_all(reponse.as_bytes())?;
+    let response = format!(header!(), CONTENT.len(), CONTENT);
+    stream.write_all(response.as_bytes())?;
 
     Ok(())
 }

@@ -67,6 +67,7 @@ members = [
     "apps/task/yield",
     "apps/task/priority",
 
+    "apps/std/mio-httpserver",
     "apps/std/mio-tcpserver",
 ]
 

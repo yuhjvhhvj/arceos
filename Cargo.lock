@@ -1114,6 +1114,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "mio-httpserver"
+version = "0.1.0"
+dependencies = [
+ "mio",
+]
+
+[[package]]
 name = "mio-tcpserver"
 version = "0.1.0"
 dependencies = [

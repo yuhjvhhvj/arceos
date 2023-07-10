@@ -1,0 +1,13 @@
+[package]
+name = "mio-httpserver"
+version = "0.1.0"
+edition = "2021"
+authors = ["Yuekai Jia <equation618@gmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+mio = { git = "https://github.com/arceos-os/mio.git", branch = "arceos", features = ["os-poll", "net"] }
+
+# Only for selection of std features
+# axstd = { path = "../../../ulib/axstd", features = ["net"], optional = true }
