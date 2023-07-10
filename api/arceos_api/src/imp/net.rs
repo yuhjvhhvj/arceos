@@ -1,3 +1,4 @@
+use crate::io::AxPollState;
 use axerrno::AxResult;
 use axnet::TcpSocket;
 use core::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
@@ -37,6 +38,11 @@ pub fn ax_tcp_peer_addr(socket: &AxTcpSocketHandle) -> AxResult<SocketAddr> {
     socket.0.peer_addr().map(into_core_sockaddr)
 }
 
+pub fn ax_tcp_set_nonblocking(socket: &AxTcpSocketHandle, nonblocking: bool) -> AxResult {
+    socket.0.set_nonblocking(nonblocking);
+    Ok(())
+}
+
 pub fn ax_tcp_connect(socket: &AxTcpSocketHandle, addr: SocketAddr) -> AxResult {
     socket.0.connect(into_ax_sockaddr(addr))
 }
@@ -61,6 +67,10 @@ pub fn ax_tcp_send(socket: &AxTcpSocketHandle, buf: &[u8]) -> AxResult<usize> {
 
 pub fn ax_tcp_recv(socket: &AxTcpSocketHandle, buf: &mut [u8]) -> AxResult<usize> {
     socket.0.recv(buf)
+}
+
+pub fn ax_tcp_poll(socket: &AxTcpSocketHandle) -> AxResult<AxPollState> {
+    socket.0.poll()
 }
 
 pub fn ax_tcp_shutdown(socket: &AxTcpSocketHandle) -> AxResult {

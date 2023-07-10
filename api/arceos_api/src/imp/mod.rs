@@ -11,14 +11,6 @@ cfg_net! {
     pub use net::*;
 }
 
-mod sys {
-    pub use axhal::misc::terminate as ax_terminate;
-}
-
-mod time {
-    pub use axhal::time::{current_time as ax_current_time, TimeValue as AxTimeValue};
-}
-
 mod stdio {
     use core::fmt;
 
@@ -36,8 +28,10 @@ mod stdio {
     }
 }
 
-pub use mem::*;
-pub use stdio::*;
-pub use sys::*;
-pub use task::*;
-pub use time::*;
+pub use self::mem::*;
+pub use self::stdio::*;
+pub use self::task::*;
+
+pub use axhal::misc::terminate as ax_terminate;
+pub use axhal::time::{current_time as ax_current_time, TimeValue as AxTimeValue};
+pub use axio::PollState as AxPollState;

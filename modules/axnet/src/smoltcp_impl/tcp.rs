@@ -420,8 +420,8 @@ impl TcpSocket {
         SOCKET_SET.poll_interfaces();
         SOCKET_SET.with_socket::<tcp::Socket, _, _>(handle, |socket| {
             Ok(PollState {
-                readable: socket.can_recv(),
-                writable: socket.can_send(),
+                readable: !socket.may_recv() || socket.can_recv(),
+                writable: !socket.may_send() || socket.can_send(),
             })
         })
     }

@@ -147,7 +147,7 @@ pub mod fs {
 
 /// Networking primitives for TCP/UDP communication.
 pub mod net {
-    use crate::AxResult;
+    use crate::{io::AxPollState, AxResult};
     use core::net::SocketAddr;
 
     define_api_type! {
@@ -160,6 +160,7 @@ pub mod net {
         pub fn ax_tcp_socket() -> AxTcpSocketHandle;
         pub fn ax_tcp_socket_addr(socket: &AxTcpSocketHandle) -> AxResult<SocketAddr>;
         pub fn ax_tcp_peer_addr(socket: &AxTcpSocketHandle) -> AxResult<SocketAddr>;
+        pub fn ax_tcp_set_nonblocking(socket: &AxTcpSocketHandle, nonblocking: bool) -> AxResult;
 
         pub fn ax_tcp_connect(handle: &AxTcpSocketHandle, addr: SocketAddr) -> AxResult;
         pub fn ax_tcp_bind(socket: &AxTcpSocketHandle, addr: SocketAddr) -> AxResult;
@@ -168,8 +169,15 @@ pub mod net {
 
         pub fn ax_tcp_send(socket: &AxTcpSocketHandle, buf: &[u8]) -> AxResult<usize>;
         pub fn ax_tcp_recv(socket: &AxTcpSocketHandle, buf: &mut [u8]) -> AxResult<usize>;
+        pub fn ax_tcp_poll(socket: &AxTcpSocketHandle) -> AxResult<AxPollState>;
         pub fn ax_tcp_shutdown(socket: &AxTcpSocketHandle) -> AxResult;
 
         pub fn ax_get_addr_info(domain_name: &str, port: Option<u16>) -> AxResult<alloc::vec::Vec<SocketAddr>>;
+    }
+}
+
+pub mod io {
+    define_api_type! {
+        pub type AxPollState;
     }
 }

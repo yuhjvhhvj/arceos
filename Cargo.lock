@@ -1105,7 +1105,7 @@ checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 [[package]]
 name = "mio"
 version = "0.8.8"
-source = "git+https://github.com/arceos-os/mio.git?branch=arceos#7889ad2b1bf4cc6d31500c29d9cd3e5765107d44"
+source = "git+https://github.com/arceos-os/mio.git?branch=arceos#a2f6073abe796f71b1a2ec789be26ea52cef0776"
 dependencies = [
  "libc",
  "log",
