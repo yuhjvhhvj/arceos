@@ -44,6 +44,8 @@ pub struct TcpSocket {
     nonblock: AtomicBool,
 }
 
+unsafe impl Sync for TcpSocket {}
+
 impl TcpSocket {
     /// Creates a new TCP socket.
     pub const fn new() -> Self {

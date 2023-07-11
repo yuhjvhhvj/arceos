@@ -1,0 +1,13 @@
+[package]
+name = "tokio-echoserver"
+version = "0.1.0"
+edition = "2021"
+authors = ["Yuekai Jia <equation618@gmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { git = "https://github.com/arceos-os/tokio.git", branch = "arceos", features = ["macros", "rt", "io-util", "net"] }
+
+# Only for selection of std features
+# axstd = { path = "../../../ulib/axstd", features = ["net", "multitask"], optional = true }

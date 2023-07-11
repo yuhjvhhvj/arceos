@@ -12,7 +12,7 @@ endif
 ifeq ($(APP_TYPE), c)
   include scripts/make/build_c.mk
 else
-  rust_package := $(shell cat $(APP)/Cargo.toml | sed -n 's/name = "\([a-z0-9A-Z_\-]*\)"/\1/p')
+  rust_package := $(shell cat $(APP)/Cargo.toml | sed -n 's/^name = "\([a-z0-9A-Z_\-]*\)"/\1/p')
   rust_target_dir := $(CURDIR)/target/$(TARGET)/$(MODE)
   rust_elf := $(rust_target_dir)/$(rust_package)
 endif
