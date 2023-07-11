@@ -173,6 +173,7 @@ pub mod net {
         pub fn ax_tcp_shutdown(socket: &AxTcpSocketHandle) -> AxResult;
 
         pub fn ax_get_addr_info(domain_name: &str, port: Option<u16>) -> AxResult<alloc::vec::Vec<SocketAddr>>;
+        pub fn ax_poll_interfaces() -> AxResult;
     }
 }
 

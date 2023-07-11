@@ -83,9 +83,8 @@ impl UdpSocket {
 
     /// Transmits data in the given buffer to the given address.
     pub fn send_to(&self, buf: &[u8], addr: SocketAddr) -> AxResult<usize> {
-        loop {
-            SOCKET_SET.poll_interfaces();
-            match SOCKET_SET.with_socket_mut::<udp::Socket, _, _>(self.handle, |socket| {
+        self.block_on(|| {
+            SOCKET_SET.with_socket_mut::<udp::Socket, _, _>(self.handle, |socket| {
                 if !socket.is_open() {
                     // not bound
                     ax_err!(NotConnected, "socket send() failed")
@@ -102,29 +101,16 @@ impl UdpSocket {
                     // tx buffer is full
                     Err(AxError::WouldBlock)
                 }
-            }) {
-                Ok(n) => {
-                    return Ok(n);
-                }
-                Err(AxError::WouldBlock) => {
-                    if self.nonblock {
-                        return Err(AxError::WouldBlock);
-                    } else {
-                        axtask::yield_now()
-                    }
-                }
-                Err(e) => return Err(e),
-            }
-        }
+            })
+        })
     }
 
     fn recv_impl<F, T>(&self, mut op: F, err: &str) -> AxResult<T>
     where
         F: FnMut(&mut udp::Socket) -> AxResult<T>,
     {
-        loop {
-            SOCKET_SET.poll_interfaces();
-            match SOCKET_SET.with_socket_mut::<udp::Socket, _, _>(self.handle, |socket| {
+        self.block_on(|| {
+            SOCKET_SET.with_socket_mut::<udp::Socket, _, _>(self.handle, |socket| {
                 if !socket.is_open() {
                     // not connected
                     ax_err!(NotConnected, err)
@@ -135,20 +121,8 @@ impl UdpSocket {
                     // no more data
                     Err(AxError::WouldBlock)
                 }
-            }) {
-                Ok(x) => {
-                    return Ok(x);
-                }
-                Err(AxError::WouldBlock) => {
-                    if self.nonblock {
-                        return Err(AxError::WouldBlock);
-                    } else {
-                        axtask::yield_now()
-                    }
-                }
-                Err(e) => return Err(e),
-            }
-        }
+            })
+        })
     }
 
     /// Receives data from the socket, stores it in the given buffer.
@@ -227,11 +201,8 @@ impl UdpSocket {
         )
     }
 
-    /// Detect whether the socket needs to receive/can send.
-    ///
-    /// Return is <need to receive, can send>
+    /// Whether the socket is readable or writable.
     pub fn poll(&self) -> AxResult<PollState> {
-        SOCKET_SET.poll_interfaces();
         SOCKET_SET.with_socket_mut::<udp::Socket, _, _>(self.handle, |socket| {
             if !socket.is_open() {
                 debug!("    udp socket close");
@@ -241,6 +212,24 @@ impl UdpSocket {
                 writable: socket.is_open() && socket.can_send(),
             })
         })
+    }
+
+    fn block_on<F, T>(&self, mut f: F) -> AxResult<T>
+    where
+        F: FnMut() -> AxResult<T>,
+    {
+        if self.nonblock {
+            f()
+        } else {
+            loop {
+                SOCKET_SET.poll_interfaces();
+                match f() {
+                    Ok(t) => return Ok(t),
+                    Err(AxError::WouldBlock) => axtask::yield_now(),
+                    Err(e) => return Err(e),
+                }
+            }
+        }
     }
 }
 

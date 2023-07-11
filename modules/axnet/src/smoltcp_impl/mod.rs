@@ -3,7 +3,7 @@ mod listen_table;
 mod tcp;
 mod udp;
 
-use alloc::{collections::VecDeque, vec};
+use alloc::vec;
 use core::cell::RefCell;
 use core::ops::DerefMut;
 
@@ -35,7 +35,6 @@ const TCP_RX_BUF_LEN: usize = 64 * 1024;
 const TCP_TX_BUF_LEN: usize = 64 * 1024;
 const UDP_RX_BUF_LEN: usize = 64 * 1024;
 const UDP_TX_BUF_LEN: usize = 64 * 1024;
-const RX_BUF_QUEUE_SIZE: usize = 64;
 const LISTEN_QUEUE_SIZE: usize = 512;
 
 const NET_BUF_LEN: usize = 1526;
@@ -51,7 +50,6 @@ struct SocketSetWrapper<'a>(Mutex<SocketSet<'a>>);
 
 struct DeviceWrapper {
     inner: RefCell<AxNetDevice>, // use `RefCell` is enough since it's wrapped in `Mutex` in `InterfaceWrapper`.
-    rx_buf_queue: VecDeque<NetBufferBox<'static>>,
 }
 
 struct InterfaceWrapper {
@@ -165,13 +163,9 @@ impl InterfaceWrapper {
 
     pub fn poll(&self, sockets: &Mutex<SocketSet>) {
         let mut dev = self.dev.lock();
-        dev.poll(|buf| {
-            snoop_tcp_packet(buf).ok(); // preprocess TCP packets
-        });
-
-        let timestamp = Self::current_time();
         let mut iface = self.iface.lock();
         let mut sockets = sockets.lock();
+        let timestamp = Self::current_time();
         iface.poll(timestamp, dev.deref_mut(), &mut sockets);
     }
 }
@@ -180,31 +174,7 @@ impl DeviceWrapper {
     fn new(inner: AxNetDevice) -> Self {
         Self {
             inner: RefCell::new(inner),
-            rx_buf_queue: VecDeque::with_capacity(RX_BUF_QUEUE_SIZE),
         }
-    }
-
-    fn poll<F>(&mut self, f: F)
-    where
-        F: Fn(&[u8]),
-    {
-        while self.rx_buf_queue.len() < RX_BUF_QUEUE_SIZE {
-            match self.inner.borrow_mut().receive() {
-                Ok(buf) => {
-                    f(buf.packet());
-                    self.rx_buf_queue.push_back(buf);
-                }
-                Err(DevError::Again) => break, // TODO: better method to avoid error type conversion
-                Err(err) => {
-                    warn!("receive failed: {:?}", err);
-                    break;
-                }
-            }
-        }
-    }
-
-    fn receive(&mut self) -> Option<NetBufferBox<'static>> {
-        self.rx_buf_queue.pop_front()
     }
 }
 
@@ -213,7 +183,15 @@ impl Device for DeviceWrapper {
     type TxToken<'a> = AxNetTxToken<'a> where Self: 'a;
 
     fn receive(&mut self, _timestamp: Instant) -> Option<(Self::RxToken<'_>, Self::TxToken<'_>)> {
-        let rx_buf = self.receive()?;
+        let rx_buf = match self.inner.borrow_mut().receive() {
+            Ok(buf) => buf,
+            Err(err) => {
+                if !matches!(err, DevError::Again) {
+                    warn!("receive failed: {:?}", err);
+                }
+                return None;
+            }
+        };
         Some((AxNetRxToken(&self.inner, rx_buf), AxNetTxToken(&self.inner)))
     }
 
@@ -234,6 +212,10 @@ struct AxNetRxToken<'a>(&'a RefCell<AxNetDevice>, NetBufferBox<'static>);
 struct AxNetTxToken<'a>(&'a RefCell<AxNetDevice>);
 
 impl<'a> RxToken for AxNetRxToken<'a> {
+    fn preprocess(&self, sockets: &mut SocketSet<'_>) {
+        snoop_tcp_packet(self.1.packet(), sockets).ok();
+    }
+
     fn consume<R, F>(self, f: F) -> R
     where
         F: FnOnce(&mut [u8]) -> R,
@@ -265,7 +247,7 @@ impl<'a> TxToken for AxNetTxToken<'a> {
     }
 }
 
-fn snoop_tcp_packet(buf: &[u8]) -> Result<(), smoltcp::wire::Error> {
+fn snoop_tcp_packet(buf: &[u8], sockets: &mut SocketSet<'_>) -> Result<(), smoltcp::wire::Error> {
     use crate::SocketAddr;
     use smoltcp::wire::{EthernetFrame, IpProtocol, Ipv4Packet, TcpPacket};
 
@@ -279,10 +261,14 @@ fn snoop_tcp_packet(buf: &[u8]) -> Result<(), smoltcp::wire::Error> {
         let is_first = tcp_packet.syn() && !tcp_packet.ack();
         if is_first {
             // create a socket for the first incoming TCP packet, as the later accept() returns.
-            LISTEN_TABLE.incoming_tcp_packet(src_addr, dst_addr);
+            LISTEN_TABLE.incoming_tcp_packet(src_addr, dst_addr, sockets);
         }
     }
     Ok(())
+}
+
+pub fn poll_interfaces() {
+    SOCKET_SET.poll_interfaces();
 }
 
 pub(crate) fn init(mut net_dev: AxNetDevice) {

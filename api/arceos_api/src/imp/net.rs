@@ -86,3 +86,8 @@ pub fn ax_get_addr_info(
         .map(|ip| SocketAddr::new(into_core_ipaddr(ip), port.unwrap_or(0)))
         .collect())
 }
+
+pub fn ax_poll_interfaces() -> AxResult {
+    axnet::poll_interfaces();
+    Ok(())
+}

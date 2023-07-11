@@ -151,7 +151,7 @@ impl TcpSocket {
         if self.is_nonblocking() {
             Err(AxError::WouldBlock)
         } else {
-            self.poll_loop(|| {
+            self.block_on(|| {
                 let PollState { writable, .. } = self.poll_connect()?;
                 if !writable {
                     Err(AxError::WouldBlock)
@@ -224,8 +224,7 @@ impl TcpSocket {
 
         // SAFETY: `self.local_addr` should be initialized after `bind()`.
         let local_addr = unsafe { self.local_addr.get().read() };
-        self.poll_loop(|| {
-            SOCKET_SET.poll_interfaces();
+        self.block_on(|| {
             let (handle, peer_addr) = LISTEN_TABLE.accept(local_addr.port)?;
             debug!("socket accepted a new connection {}", peer_addr);
             Ok(TcpSocket::new_connected(handle, local_addr, peer_addr))
@@ -275,8 +274,7 @@ impl TcpSocket {
 
         // SAFETY: `self.handle` should be initialized in a connected socket.
         let handle = unsafe { self.handle.get().read().unwrap() };
-        self.poll_loop(|| {
-            SOCKET_SET.poll_interfaces();
+        self.block_on(|| {
             SOCKET_SET.with_socket_mut::<tcp::Socket, _, _>(handle, |socket| {
                 if !socket.is_active() {
                     // not open
@@ -309,8 +307,7 @@ impl TcpSocket {
 
         // SAFETY: `self.handle` should be initialized in a connected socket.
         let handle = unsafe { self.handle.get().read().unwrap() };
-        self.poll_loop(|| {
-            SOCKET_SET.poll_interfaces();
+        self.block_on(|| {
             SOCKET_SET.with_socket_mut::<tcp::Socket, _, _>(handle, |socket| {
                 if !socket.is_active() || !socket.may_send() {
                     // closed by remote
@@ -330,7 +327,7 @@ impl TcpSocket {
         })
     }
 
-    /// Detect whether the socket is readable or writable.
+    /// Whether the socket is readable or writable.
     pub fn poll(&self) -> AxResult<PollState> {
         match self.get_state() {
             STATE_CONNECTING => self.poll_connect(),
@@ -395,7 +392,6 @@ impl TcpSocket {
     fn poll_connect(&self) -> AxResult<PollState> {
         // SAFETY: `self.handle` should be initialized above.
         let handle = unsafe { self.handle.get().read().unwrap() };
-        SOCKET_SET.poll_interfaces();
         let writable =
             SOCKET_SET.with_socket::<tcp::Socket, _, _>(handle, |socket| match socket.state() {
                 State::SynSent => false, // wait for connection
@@ -417,7 +413,6 @@ impl TcpSocket {
     fn poll_stream(&self) -> AxResult<PollState> {
         // SAFETY: `self.handle` should be initialized in a connected socket.
         let handle = unsafe { self.handle.get().read().unwrap() };
-        SOCKET_SET.poll_interfaces();
         SOCKET_SET.with_socket::<tcp::Socket, _, _>(handle, |socket| {
             Ok(PollState {
                 readable: !socket.may_recv() || socket.can_recv(),
@@ -429,28 +424,26 @@ impl TcpSocket {
     fn poll_listener(&self) -> AxResult<PollState> {
         // SAFETY: `self.local_addr` should be initialized in a listening socket.
         let local_addr = unsafe { self.local_addr.get().read() };
-        SOCKET_SET.poll_interfaces();
         Ok(PollState {
             readable: LISTEN_TABLE.can_accept(local_addr.port)?,
             writable: false,
         })
     }
 
-    fn poll_loop<F, T>(&self, mut f: F) -> AxResult<T>
+    fn block_on<F, T>(&self, mut f: F) -> AxResult<T>
     where
         F: FnMut() -> AxResult<T>,
     {
-        loop {
-            match f() {
-                Ok(t) => return Ok(t),
-                Err(AxError::WouldBlock) => {
-                    if self.is_nonblocking() {
-                        return Err(AxError::WouldBlock);
-                    } else {
-                        axtask::yield_now();
-                    }
+        if self.is_nonblocking() {
+            f()
+        } else {
+            loop {
+                SOCKET_SET.poll_interfaces();
+                match f() {
+                    Ok(t) => return Ok(t),
+                    Err(AxError::WouldBlock) => axtask::yield_now(),
+                    Err(e) => return Err(e),
                 }
-                Err(e) => return Err(e),
             }
         }
     }
