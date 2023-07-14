@@ -1588,6 +1588,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "socket2"
+version = "0.4.9"
+source = "git+https://github.com/arceos-os/socket2.git?branch=arceos#70dc3e9ecccfa5bbd7e9aa028b4b4c30f42f1757"
+dependencies = [
+ "libc",
+ "winapi",
+]
+
+[[package]]
+name = "socket2-echoserver"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "socket2 0.4.9 (git+https://github.com/arceos-os/socket2.git?branch=arceos)",
+]
+
+[[package]]
 name = "spin"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1731,7 +1748,7 @@ dependencies = [
  "libc",
  "mio",
  "pin-project-lite",
- "socket2",
+ "socket2 0.4.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio-macros",
  "windows-sys",
 ]

@@ -1,0 +1,13 @@
+[package]
+name = "socket2-echoserver"
+version = "0.1.0"
+edition = "2021"
+authors = ["scpointer <responsibilities@foxmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+env_logger = { version = "0.9.3", default-features = false }
+socket2 = { git = "https://github.com/arceos-os/socket2.git", branch = "arceos", feature = "all" }
+
+# axstd = { path = "../../../ulib/axstd", features = ["net"], optional = true }
