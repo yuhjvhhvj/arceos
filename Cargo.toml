@@ -70,6 +70,7 @@ members = [
     "apps/std/mio-httpserver",
     "apps/std/mio-tcpserver",
     "apps/std/tokio-echoserver",
+    "apps/std/socket2-echoserver",
 ]
 
 [profile.release]

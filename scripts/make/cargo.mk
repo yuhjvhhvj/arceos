@@ -28,7 +28,7 @@ define cargo_rustc
 endef
 
 define cargo_clippy
-  $(call run_cmd,cargo clippy,--all-features --workspace --exclude axlog --exclude mio-* --exclude tokio-* $(1) $(verbose))
+  $(call run_cmd,cargo clippy,--all-features --workspace --exclude axlog --exclude mio-* --exclude tokio-* --exclude socket2-* $(1) $(verbose))
   $(call run_cmd,cargo clippy,-p axlog -p percpu -p percpu_macros $(1) $(verbose))
 endef
 
