@@ -41,7 +41,10 @@ fn test() {
         #[cfg(target_os = "arceos")]
         println!("Accepted connection from: {}", sockaddr);
         #[cfg(not(target_os = "arceos"))]
-        println!("Accepted connection from: {}", sockaddr.as_socket().unwrap());
+        println!(
+            "Accepted connection from: {}",
+            sockaddr.as_socket().unwrap()
+        );
         connection.write_all(DATA).unwrap();
 
         loop {
