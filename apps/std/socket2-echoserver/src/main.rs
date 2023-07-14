@@ -8,7 +8,7 @@ use std::str::from_utf8;
 
 const DATA: &[u8] = b"hello world";
 const BUF_SIZE: usize = 4096;
-const ADDR: &str = "127.0.0.1:5555";
+const ADDR: &str = "0.0.0.0:5555";
 
 fn main() {
     env_logger::init();
