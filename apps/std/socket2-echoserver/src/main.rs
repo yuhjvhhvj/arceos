@@ -1,3 +1,5 @@
+//! Configuration needed to run this test (in the root Makefile):
+//! A=apps/std/socket2-echoserver STD=y NET=y
 use socket2::{Domain, Socket, Type};
 use std::io::Write;
 use std::mem::MaybeUninit;
@@ -20,6 +22,8 @@ fn test() {
     let socket = Socket::new(Domain::IPV4, Type::STREAM, None).unwrap();
     let addr: SocketAddr = ADDR.parse::<SocketAddr>().unwrap();
     println!("addr {:#?}", addr);
+    #[cfg(not(target_os = "arceos"))]
+    let addr: socket2::SockAddr = addr.into();
     socket.bind(&addr).unwrap();
     socket.listen(128).unwrap();
 
@@ -34,7 +38,10 @@ fn test() {
                 println!("user got a Err from accept, try again");
             }
         };
+        #[cfg(target_os = "arceos")]
         println!("Accepted connection from: {}", sockaddr);
+        #[cfg(not(target_os = "arceos"))]
+        println!("Accepted connection from: {}", sockaddr.as_socket().unwrap());
         connection.write_all(DATA).unwrap();
 
         loop {
