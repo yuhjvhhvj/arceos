@@ -21,6 +21,7 @@ multitask = ["axtask"]
 fs = ["axdriver", "axfs"]
 net = ["axdriver", "axnet"]
 display = ["axdriver", "axdisplay"]
+math = ["dep:axmath"]
 
 std = ["axhal/tls", "axtask?/tls"]
 
@@ -34,6 +35,7 @@ axfs = { path = "../axfs", optional = true }
 axnet = { path = "../axnet", optional = true }
 axdisplay = { path = "../axdisplay", optional = true }
 axtask = { path = "../axtask", optional = true }
+axmath = { path = "../../crates/axmath", optional = true }
 
 crate_interface = { path = "../../crates/crate_interface" }
 percpu = { path = "../../crates/percpu", optional = true }

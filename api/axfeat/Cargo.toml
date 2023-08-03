@@ -12,6 +12,9 @@ documentation = "https://rcore-os.github.io/arceos/axfeat/index.html"
 [features]
 default = []
 
+# Math support
+math = ["axruntime/math"]
+
 # Build for rust std library
 std = ["axruntime/std"]
 

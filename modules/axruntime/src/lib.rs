@@ -141,6 +141,9 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
         );
     }
 
+    #[cfg(feature = "math")]
+    axmath::init();
+
     #[cfg(feature = "alloc")]
     {
         info!("Initialize global memory allocator...");

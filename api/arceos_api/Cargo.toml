@@ -12,11 +12,12 @@ documentation = "https://rcore-os.github.io/arceos/arceos_api/index.html"
 [features]
 default = []
 
+math = ["axfeat/math"]
 irq = ["axfeat/irq"]
 alloc = ["dep:axalloc", "axfeat/alloc"]
 multitask = ["axtask/multitask", "axfeat/multitask"]
 fs = ["dep:axfs", "axfeat/fs"]
-net = ["dep:axnet", "axfeat/net"]
+net = ["dep:axnet", "dep:axsync", "axfeat/net"]
 display = ["dep:axdisplay", "axfeat/display"]
 
 # Use dummy functions if the feature is not enabled
@@ -32,6 +33,7 @@ axerrno = { path = "../../crates/axerrno" }
 axhal = { path = "../../modules/axhal" }
 axalloc = { path = "../../modules/axalloc", optional = true }
 axtask = { path = "../../modules/axtask", optional = true }
+axsync = { path = "../../modules/axsync", optional = true }
 axfs = { path = "../../modules/axfs", optional = true }
 axnet = { path = "../../modules/axnet", optional = true }
 axdisplay = { path = "../../modules/axdisplay", optional = true }

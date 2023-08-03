@@ -153,6 +153,8 @@ pub mod net {
     define_api_type! {
         @cfg "net";
         pub type AxTcpSocketHandle;
+        pub type AxUdpSocketHandle;
+        pub type AxSocketHandle;
     }
 
     define_api! {
@@ -171,6 +173,14 @@ pub mod net {
         pub fn ax_tcp_recv(socket: &AxTcpSocketHandle, buf: &mut [u8]) -> AxResult<usize>;
         pub fn ax_tcp_poll(socket: &AxTcpSocketHandle) -> AxResult<AxPollState>;
         pub fn ax_tcp_shutdown(socket: &AxTcpSocketHandle) -> AxResult;
+
+        pub fn ax_udp_bind(addr: SocketAddr) -> AxResult<AxUdpSocketHandle>;
+        pub fn ax_udp_connect(handle: &AxUdpSocketHandle, addr: SocketAddr) -> AxResult;
+        pub fn ax_udp_poll(socket: &AxUdpSocketHandle) -> AxResult<AxPollState>;
+        pub fn ax_udp_send(socket: &AxUdpSocketHandle, buf: &[u8]) -> AxResult<usize>;
+        pub fn ax_udp_send_to(socket: &AxUdpSocketHandle, buf: &[u8], addr: SocketAddr) -> AxResult<usize>;
+        pub fn ax_udp_recv_from(socket: &AxUdpSocketHandle, buf: &mut [u8]) -> AxResult<(usize, SocketAddr)>;
+        pub fn ax_udp_socket_addr(socket: &AxUdpSocketHandle) -> AxResult<SocketAddr>;
 
         pub fn ax_get_addr_info(domain_name: &str, port: Option<u16>) -> AxResult<alloc::vec::Vec<SocketAddr>>;
         pub fn ax_poll_interfaces() -> AxResult;
