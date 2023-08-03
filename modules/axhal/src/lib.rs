@@ -69,7 +69,9 @@ pub mod console {
                 bytes[len] = c;
                 len += 1;
             } else {
-                break;
+                if len > 0 {
+                    break;
+                }
             }
         }
         len
