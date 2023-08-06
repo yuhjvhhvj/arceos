@@ -161,12 +161,12 @@ export_out_param! {
 
 #[no_mangle]
 pub extern "C" fn sincos(x: f64, s: &mut f64, c: &mut f64) {
-	(*s, *c) = libm::sincos(x);
+    (*s, *c) = libm::sincos(x);
 }
 
 #[no_mangle]
 pub extern "C" fn sincosf(x: f32, s: &mut f32, c: &mut f32) {
-	(*s, *c) = libm::sincosf(x);
+    (*s, *c) = libm::sincosf(x);
 }
 
 pub fn init() {
