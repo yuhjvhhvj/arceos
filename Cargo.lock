@@ -161,6 +161,7 @@ dependencies = [
  "axlog",
  "axnet",
  "axruntime",
+ "axsync",
  "axtask",
 ]
 
@@ -375,6 +376,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "axmath"
+version = "0.1.0"
+dependencies = [
+ "libm",
+]
+
+[[package]]
 name = "axnet"
 version = "0.1.0"
 dependencies = [
@@ -402,6 +410,7 @@ dependencies = [
  "axfs",
  "axhal",
  "axlog",
+ "axmath",
  "axnet",
  "axtask",
  "crate_interface",
@@ -1089,6 +1098,12 @@ dependencies = [
  "cfg-if",
  "winapi",
 ]
+
+[[package]]
+name = "libm"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7012b1bbb0719e1097c47611d3898568c546d597c2e74d66f6087edd5233ff4"
 
 [[package]]
 name = "linked_list"

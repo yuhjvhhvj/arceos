@@ -20,7 +20,7 @@ documentation = "https://rcore-os.github.io/arceos/libax/index.html"
 default = []
 
 # math support
-math = ["arceos_api/math"]
+math = ["axfeat/math"]
 
 # Multicore
 smp = ["axfeat/smp"]
