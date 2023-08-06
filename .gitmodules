@@ -1,4 +1,4 @@
 [submodule "third_party/rust"]
 	path = third_party/rust
 	url = https://github.com/arceos-os/rust.git
-	branch = std_support
+	branch = tokio_apps
